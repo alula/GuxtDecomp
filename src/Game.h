@@ -5,5 +5,6 @@
 
 extern BOOL g_FullScreenEnabled;
 extern BOOL GameFocussed;
+extern int magnification;
 
 #endif

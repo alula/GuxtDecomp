@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "WinMain.h"
+#include "Draw.h"
 #include "Game.h"
 #include "Input.h"
 #include "Mutex.h"
@@ -91,7 +92,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
     }
 
     SetRenderOffset(0, 0);
-    InitFont(0, 6, 12);
+    InitText(0, 6, 12);
     SetScreenMode(0, 1);
 
     if (!g_FullScreenEnabled && !SetWindowPosRect(hWnd, windowName[1], 0))
@@ -100,7 +101,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
     v6 = GetTickCount();
     DrawStudioPixel();
     InitDirectInput(hInstance, hWnd);
-    sub_422AF0();
+    DirectInputUpdateAnalogStick();
     pxtone_Ready(hWnd, 2, 44100, 16, 0.1f, 1, 0);
 
     AssignDirectSound(pxtone_GetDirectSound());
