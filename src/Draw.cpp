@@ -788,6 +788,85 @@ void CortBox(const RECT *rcView, const RECT *rc, unsigned int color)
     SurfaceB->Blt(&rcWork, 0, 0, DDBLT_WAIT | DDBLT_COLORFILL, &bltfx);
 }
 
+//----- (00424210) --------------------------------------------------------
+int ConvertRGBToNative(unsigned int color)
+{
+    COLORREF cref;
+    DDSURFACEDESC desc;
+    HDC hdc;
+
+    if (SurfaceB->GetDC(&hdc))
+        return -1;
+
+    cref = GetPixel(hdc, 0, 0);
+    SetPixel(hdc, 0, 0, color);
+    SurfaceB->ReleaseDC(hdc);
+
+    memset(&desc, 0, sizeof(desc));
+    desc.dwSize = 108;
+
+    if (SurfaceB->Lock(NULL, &desc, 1, NULL))
+        return -1;
+
+    unsigned int col = *((unsigned int *)desc.lpSurface);
+
+    if (desc.ddpfPixelFormat.dwRGBBitCount < 32)
+        col &= (1u << (desc.ddpfPixelFormat.dwRGBBitCount)) - 1u;
+
+    SurfaceB->Unlock(NULL);
+    if (SurfaceB->GetDC(&hdc))
+        return -1;
+
+    SetPixel(hdc, 0, 0, cref);
+    SurfaceB->ReleaseDC(hdc);
+
+    return col;
+}
+
+//----- (00424340) --------------------------------------------------------
+int GetSurfaceColor(int surf_no)
+{
+    DDSURFACEDESC desc;
+
+    memset(&desc, 0, sizeof(desc));
+    desc.dwSize = 108;
+
+    if (g_Surfaces[surf_no].surface->Lock(NULL, &desc, 1, NULL))
+        return -1;
+
+    unsigned int col = *((unsigned int *)desc.lpSurface);
+
+    if (desc.ddpfPixelFormat.dwRGBBitCount < 0x20)
+        col &= (1u << desc.ddpfPixelFormat.dwRGBBitCount) - 1u;
+
+    g_Surfaces[surf_no].surface->Unlock(NULL);
+
+    return col;
+}
+
+//----- (004243E0) --------------------------------------------------------
+void InitText(const char *pszFaceName, char width, int cHeight)
+{
+    h = CreateFontA(cHeight, width, 0, 0, 400, 0, 0, 0, 1u, 4u, 0, 0, 1u, pszFaceName);
+}
+
+//----- (00424420) --------------------------------------------------------
+void PutText(int x, int y, LPCSTR lpString, COLORREF color)
+{
+    HGDIOBJ hObj;
+    HDC hdc;
+
+    SurfaceB->GetDC(&hdc);
+    hObj = SelectObject(hdc, h);
+
+    SetBkMode(hdc, 1);
+    SetTextColor(hdc, color);
+    TextOutA(hdc, x, y, lpString, strlen(lpString));
+    SelectObject(hdc, hObj);
+
+    SurfaceB->ReleaseDC(hdc);
+}
+
 //----- (004244C0) --------------------------------------------------------
 void PutTextSurface(int x, int y, LPCSTR lpString, COLORREF color, int surf_id)
 {
@@ -801,21 +880,21 @@ void PutTextSurface(int x, int y, LPCSTR lpString, COLORREF color, int surf_id)
 
     g_Surfaces[surf_id].surface->GetDC(&hdc);
 
-    HGDIOBJ lh = SelectObject(hdc, h);
+    HGDIOBJ hObj = SelectObject(hdc, h);
     SetBkMode(hdc, 1);
     SetTextColor(hdc, color);
 
     int text_len = strlen(lpString);
     TextOutA(hdc, x, y, lpString, text_len);
-    SelectObject(hdc, lh);
+    SelectObject(hdc, hObj);
 
     g_Surfaces[surf_id].surface->ReleaseDC(hdc);
 }
 
 //----- (00424590) --------------------------------------------------------
-BOOL ReleaseText()
+void ReleaseText()
 {
-    return DeleteObject(h);
+    DeleteObject(h);
 }
 
 //----- (004245B0) --------------------------------------------------------
@@ -859,31 +938,75 @@ void Flip_Screen2()
 
     for (int i = 0; i < 64; ++i)
     {
-        if (g_Surfaces[i].surface)
+        if (!g_Surfaces[i].surface)
+            continue;
+
+        s = &g_Surfaces[i];
+        if (s->surface->IsLost() != DDERR_SURFACELOST)
+            continue;
+
+        ++surfaces_lost;
+        s->surface->Restore();
+
+        DoNothing2(i + 48);
+
+        if ((s->flags & 2) != 0)
+            continue;
+
+        if (s->tex_name)
         {
-            s = &g_Surfaces[i];
-            if (s->surface->IsLost() != DDERR_SURFACELOST)
-                continue;
-
-            ++surfaces_lost;
-            s->surface->Restore();
-
-            DoNothing2(i + 48);
-
-            if ((s->flags & 2) == 0)
-            {
-                if (s->tex_name)
-                {
-                    strcpy(tex_name_buf, s->tex_name);
-                    MakeSurface_Generic(tex_name_buf, i, (s->flags & 1) != 0);
-                }
-                else
-                {
-                    rc.right = s->width;
-                    rc.bottom = s->height;
-                    BlitSurface(&rc, 0, i);
-                }
-            }
+            strcpy(tex_name_buf, s->tex_name);
+            MakeSurface_Generic(tex_name_buf, i, (s->flags & 1) != 0);
+        }
+        else
+        {
+            rc.right = s->width;
+            rc.bottom = s->height;
+            BlitSurface(&rc, 0, i);
         }
     }
+}
+
+//----- (004247F0) --------------------------------------------------------
+BOOL __cdecl ResetSurfaceTbl(HWND hwnd, int mag)
+{
+    BOOL load_from_file; // [esp+0h] [ebp-124h]
+    char path[268];      // [esp+4h] [ebp-120h] BYREF
+    BOOL system_memory;  // [esp+114h] [ebp-10h]
+
+    if (magnification == mag)
+        return TRUE;
+
+    int old_mag = magnification;
+    
+    ReleaseSurfaceA();
+    InitMainSurface(hwnd, MainSurfaceWidth, MainSurfaceHeight, mag);
+
+    for (int i = 0; i < 64; ++i)
+    {
+        if (!g_Surfaces[i].surface)
+            continue;
+
+        PxSurface *s = &g_Surfaces[i];
+
+        s->surface->Release();
+        s->surface = NULL;
+
+        totalSurfaceSize -= old_mag * s->height * old_mag * s->width;
+        load_from_file = (s->flags & 1) != 0;
+        system_memory = (s->flags & 2) != 0;
+
+        if (s->tex_name)
+        {
+            strcpy(path, s->tex_name);
+            InitSurface(s->width, s->height, i, system_memory);
+            MakeSurface_Generic(path, i, load_from_file);
+        }
+        else
+        {
+            InitSurface(s->width, s->height, i, system_memory);
+        }
+    }
+
+    return TRUE;
 }

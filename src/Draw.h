@@ -67,12 +67,22 @@ void BlitSurface(const RECT *rc, unsigned int color, signed int surf_no);
 
 void CortBox(const RECT *rcView, const RECT *rc, unsigned int color);
 
+int ConvertRGBToNative(unsigned int color);
+
+int GetSurfaceColor(int surf_no);
+
+void InitText(const char *pszFaceName, char width, int cHeight);
+
+void PutText(int x, int y, LPCSTR lpString, COLORREF color);
+
 void PutTextSurface(int x, int y, LPCSTR lpString, COLORREF color, int surf_id);
 
-BOOL ReleaseText();
+void ReleaseText();
 
 BOOL DoNothing2(int some_surf_id);
 
 void Flip_Screen2();
+
+BOOL __cdecl ResetSurfaceTbl(HWND hwnd, int mag);
 
 #endif
