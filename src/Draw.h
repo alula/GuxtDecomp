@@ -25,6 +25,8 @@ BOOL SetFullscreenDDrawParams(BOOL fullscreen);
 
 BOOL InitDirectDraw(HWND a1, char *data_path, BOOL fullscreen, BOOL scrambled_sprites);
 
+void EndDirectDraw(HWND hwnd);
+
 BOOL InitMainSurface(HWND hwnd, int width, int height, int mag);
 
 void ReleaseSurfaceA();

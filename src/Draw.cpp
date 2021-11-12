@@ -139,6 +139,22 @@ BOOL InitDirectDraw(HWND hwnd, char *data_path, BOOL fullscreen, BOOL scrambled_
     return TRUE;
 }
 
+//----- (00422E10) --------------------------------------------------------
+void EndDirectDraw(HWND hwnd)
+{
+    ClearSurfaceTbl();
+    ReleaseSurfaceA();
+    
+    lpDD->SetCooperativeLevel(hwnd, DISCL_BACKGROUND);
+    if (lpDD) // ??????????
+    {
+        lpDD->Release();
+        lpDD = NULL;
+    }
+
+    DDHWnd = NULL;
+}
+
 //----- (00422E70) --------------------------------------------------------
 BOOL InitMainSurface(HWND hwnd, int width, int height, int mag)
 {
@@ -978,7 +994,7 @@ BOOL __cdecl ResetSurfaceTbl(HWND hwnd, int mag)
         return TRUE;
 
     int old_mag = magnification;
-    
+
     ReleaseSurfaceA();
     InitMainSurface(hwnd, MainSurfaceWidth, MainSurfaceHeight, mag);
 
