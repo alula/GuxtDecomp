@@ -1,0 +1,49 @@
+
+### CMake ###
+build/
+*.exe
+
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+
+### CMake Patch ###
+# External projects
+*-prefix/
+
+### IDAPro ###
+# gitginore template for IDA Pro
+# website: https://www.hex-rays.com/index.shtml
+
+# IDA Pro Runtime temporary file
+*.id0
+*.id1
+*.id2
+*.nam
+*.til
+
+# IDA Pro 64 packaged data
+*.i64
+# IDA Pro 32 packaged data
+*.idb
+
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Local History for Visual Studio Code
+.history/
+
+# Random shit
+/pxGam5.c
