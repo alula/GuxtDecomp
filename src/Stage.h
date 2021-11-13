@@ -15,8 +15,10 @@ extern TileMap attrStage;
 
 BOOL ResetStage();
 int GetStageHeight();
-BOOL ResetStageSurface();
 
+int GetTile(int x, int y);
+void ShiftTile(int x, int y);
+BOOL ResetStageSurface();
 void ResetStageText();
 void FreeStageText();
 void PutStageText(const char *text);

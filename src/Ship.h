@@ -34,7 +34,17 @@ struct Ship
   RECT rect;
 };
 
+extern Ship ship;
+
 Ship *GetShip();
 void ResetShip();
+
+void LoadPximgPlayerInit();
+
+void KillShip();
+void ShipStateEndingProc();
+void SetShipInvincibility();
+void SetShipEnding();
+int LoadPximgCharactor();
 
 #endif

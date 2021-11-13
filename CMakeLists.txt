@@ -2,16 +2,24 @@ cmake_minimum_required(VERSION 3.18)
 project(Guxt LANGUAGES CXX)
 
 add_executable(pxGame 
+    src/Bullet.cpp
     src/Caret.cpp
     src/Draw.cpp
+    src/Event.cpp
+    src/Fade.cpp
     src/Game.cpp
     src/GameAttr.cpp
     src/Input.cpp
+    src/Menu.cpp
     src/Mutex.cpp
-    src/Text.cpp
+    src/Object.cpp
+    src/PixFile.cpp
+    src/PlayRecord.cpp
     src/Ship.cpp
     src/Sound.cpp
     src/Stage.cpp
+    src/Text.cpp
+    src/TrigFuncs.cpp
     src/WinDebugDrag.cpp
     src/WinMain.cpp
     src/pxGame.rc
@@ -28,4 +36,4 @@ file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/pxGame" DESTINATION "${CMAKE_BINARY_DIR}/
 if(MSYS OR MINGW)
     target_link_libraries(pxGame -static-libgcc -static-libstdc++)
 endif()
-target_link_libraries(pxGame gdi32 imm32 comctl32 shlwapi dsound ddraw dinput8 dxguid pxtone)
+target_link_libraries(pxGame gdi32 imm32 comctl32 shlwapi dsound ddraw dinput8 dxguid version pxtone)

@@ -12,6 +12,37 @@ struct DirectInputProcStruct
     int extraBtns;
 };
 
+struct TriggerStruct
+{
+    unsigned int hold;
+    unsigned int prev;
+    unsigned int trig;
+};
+
+struct ButtonConfig
+{
+    unsigned char left;
+    unsigned char right;
+    unsigned char up;
+    unsigned char down;
+    unsigned char shot;
+    unsigned char pause;
+    unsigned char joyShot;
+    unsigned char joyPause;
+};
+
+void ResetKeyboardConfig(ButtonConfig *a1);
+void ResetJoystickConfig(ButtonConfig *a1);
+void ResetButtonConfig(ButtonConfig *a1);
+int WriteButtonConfig(void *a1);
+BOOL ReadButtonConfig(ButtonConfig *a1);
+void LoadButtonConfig();
+signed int GetTrg();
+int GetKeyHeld();
+void ClearTrg_(TriggerStruct *a1);
+void UpdateTrg(TriggerStruct *a1);
+signed int GetPlayerInput(unsigned char a1);
+
 BOOL InitDirectInput(HINSTANCE hinst, HWND hWnd);
 BOOL InitDirectInputDevice(HWND hWnd);
 void ReleaseDirectInput();
@@ -22,5 +53,12 @@ void Input_Reset();
 void Input_ProcessWinMsg(HWND hWnd, unsigned int msg, WPARAM wParam);
 void Input_sub_425A40(int a1, int a2, int a3);
 int Input_UpdateTriggers();
+int Input_GetUnused3();
+BOOL Input_IsHeld(int a1);
+BOOL Input_IsTrig(int a1);
+BOOL Input_IsLMBHeld();
+BOOL Input_IsRMBHeld();
+BOOL Input_IsLMBTrig();
+BOOL Input_IsRMBTrig();
 
 #endif

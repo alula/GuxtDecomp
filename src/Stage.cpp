@@ -29,6 +29,35 @@ int GetStageHeight()
     return result;
 }
 
+//----- (0041E9F0) --------------------------------------------------------
+int GetTile(int x, int y)
+{
+    if (x < 0 || y < 0)
+        return 0;
+
+    int index = x + y * mapStage.width;
+    if (index >= mapStage.height * mapStage.width)
+        return 0;
+
+    int index2 = (mapStage.data[index] & 0xF) + attrStage.width * (mapStage.data[index] / 16);
+    if (index2 < attrStage.height * attrStage.width)
+        return attrStage.data[index2];
+
+    return 0;
+}
+
+//----- (0041EA90) --------------------------------------------------------
+void ShiftTile(int x, int y)
+{
+
+    if (x >= 0 && y >= 0)
+    {
+        int v2 = x + y * mapStage.width;
+        if (v2 < mapStage.height * mapStage.width)
+            --mapStage.data[v2];
+    }
+}
+
 //----- (0041EAF0) --------------------------------------------------------
 BOOL ResetStageSurface()
 {

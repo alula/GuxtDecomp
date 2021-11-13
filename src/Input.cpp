@@ -1,13 +1,180 @@
 #include <windows.h>
 #include <dinput.h>
+#include <stdio.h>
 
 #include "Input.h"
+#include "WinMain.h"
 
 struct SomeWeirdInputStruct
 {
     LPDIRECTINPUTA dinput;
     IDirectInputDevice2A *did2;
 };
+
+static const char *ButtonConfigFile = "buttons.bin";
+ButtonConfig g_KeyMap = {0, 0, 0, 0, 0, 0, 0, 0};
+static int isKeyHeld = 0;
+
+//----- (00401130) --------------------------------------------------------
+void ResetKeyboardConfig(ButtonConfig *a1)
+{
+    a1->left = 37;
+    a1->right = 39;
+    a1->up = 38;
+    a1->down = 40;
+    a1->shot = 17;
+    a1->pause = 9;
+}
+
+//----- (00401160) --------------------------------------------------------
+void ResetJoystickConfig(ButtonConfig *a1)
+{
+    a1->joyShot = 0;
+    a1->joyPause = 1;
+}
+
+//----- (00401180) --------------------------------------------------------
+void ResetButtonConfig(ButtonConfig *a1)
+{
+    ResetKeyboardConfig(a1);
+    ResetJoystickConfig(a1);
+}
+
+//----- (004011A0) --------------------------------------------------------
+int WriteButtonConfig(void *a1)
+{
+    char v2[268]; // [esp+0h] [ebp-118h] BYREF
+    int v3;       // [esp+110h] [ebp-8h]
+    FILE *v4;     // [esp+114h] [ebp-4h]
+
+    v3 = 0;
+    v4 = 0;
+
+    sprintf(v2, "%s\\%s", temp_guxtPath, ButtonConfigFile);
+    v4 = fopen(v2, "wb");
+
+    if (v4 && fwrite(a1, 8u, 1u, v4) == 1)
+        v3 = 1;
+
+    if (v4)
+        fclose(v4);
+    return v3;
+}
+// 441044: using guessed type char *ButtonConfigFile;
+
+//----- (00401240) --------------------------------------------------------
+BOOL ReadButtonConfig(ButtonConfig *a1)
+{
+    char v2[268];       // [esp+0h] [ebp-118h] BYREF
+    int result = FALSE; // [esp+110h] [ebp-8h]
+    FILE *fd = NULL;    // [esp+114h] [ebp-4h]
+
+    sprintf(v2, "%s\\%s", temp_guxtPath, ButtonConfigFile);
+    fd = fopen(v2, "rb");
+
+    if (fd && fread(a1, 8u, 1u, fd) == 1)
+        result = 1;
+
+    if (fd)
+        fclose(fd);
+
+    return result;
+}
+// 441044: using guessed type char *ButtonConfigFile;
+
+//----- (004012E0) --------------------------------------------------------
+void LoadButtonConfig()
+{
+    if (!ReadButtonConfig(&g_KeyMap))
+        ResetButtonConfig(&g_KeyMap);
+}
+
+//----- (00401310) --------------------------------------------------------
+signed int GetTrg()
+{
+    signed int v1;            // [esp+0h] [ebp-18h]
+    DirectInputProcStruct a1; // [esp+4h] [ebp-14h] BYREF
+
+    v1 = 0;
+    isKeyHeld = 0;
+
+    if (Input_IsHeld(g_KeyMap.left))
+        v1 = 0x10;
+    if (Input_IsHeld(g_KeyMap.right))
+        v1 |= 0x20u;
+    if (Input_IsHeld(g_KeyMap.up))
+        v1 |= 0x40u;
+    if (Input_IsHeld(g_KeyMap.down))
+        v1 |= 0x80u;
+    if (Input_IsHeld(g_KeyMap.shot))
+        v1 |= 1u;
+    if (Input_IsHeld(g_KeyMap.pause))
+        v1 |= 2u;
+    if (v1)
+        isKeyHeld = 1;
+    if (DirectInputProc(&a1))
+    {
+        if (a1.left)
+            v1 |= 0x10u;
+        if (a1.right)
+            v1 |= 0x20u;
+        if (a1.up)
+            v1 |= 0x40u;
+        if (a1.down)
+            v1 |= 0x80u;
+        if ((a1.extraBtns & (1 << g_KeyMap.joyShot)) != 0)
+            v1 |= 1u;
+        if ((a1.extraBtns & (1 << g_KeyMap.joyPause)) != 0)
+            v1 |= 2u;
+    }
+    return v1;
+}
+// 442C50: using guessed type int isKeyHeld;
+
+//----- (00401480) --------------------------------------------------------
+int GetKeyHeld()
+{
+    return isKeyHeld;
+}
+
+//----- (00401490) --------------------------------------------------------
+void ClearTrg_(TriggerStruct *a1)
+{
+  Input_Reset();
+  a1->hold = GetTrg();
+  a1->trig = a1->hold;
+  a1->prev = 0;
+}
+
+//----- (004014C0) --------------------------------------------------------
+void UpdateTrg(TriggerStruct *a1)
+{
+    a1->prev = a1->trig ^ a1->hold;
+    a1->prev &= a1->hold;
+    a1->trig = a1->hold;
+}
+
+//----- (00401500) --------------------------------------------------------
+signed int GetPlayerInput(unsigned char a1)
+{
+    if ((a1 & 0x10) != 0 && (a1 & 0x40) != 0)
+        return 5;
+    if ((a1 & 0x20) != 0 && (a1 & 0x40) != 0)
+        return 6;
+    if ((a1 & 0x10) != 0 && (a1 & 0x80) != 0)
+        return 7;
+    if ((a1 & 0x20) != 0 && (a1 & 0x80) != 0)
+        return 8;
+    if ((a1 & 0x10) != 0)
+        return 1;
+    if ((a1 & 0x20) != 0)
+        return 2;
+    if ((a1 & 0x40) != 0)
+        return 3;
+    if ((a1 & 0x80) != 0)
+        return 4;
+    return 0;
+}
 
 LPDIRECTINPUTA ppDI; // idb
 IDirectInputDevice2A *g_DID2;
@@ -326,4 +493,46 @@ int Input_UpdateTriggers()
     unused2 = unused1;
 
     return result;
+}
+
+//----- (00425B60) --------------------------------------------------------
+int Input_GetUnused3()
+{
+    return unused3;
+}
+
+//----- (00425B70) --------------------------------------------------------
+BOOL Input_IsHeld(int a1)
+{
+    return keysHeld[a1] != 0;
+}
+
+//----- (00425B90) --------------------------------------------------------
+BOOL Input_IsTrig(int a1)
+{
+    return keysTrig[a1] != 0;
+}
+
+//----- (00425BB0) --------------------------------------------------------
+BOOL Input_IsLMBHeld()
+{
+    return (mouseHeld & 1) != 0;
+}
+
+//----- (00425BD0) --------------------------------------------------------
+BOOL Input_IsRMBHeld()
+{
+    return (mouseHeld & 0x10) != 0;
+}
+
+//----- (00425BF0) --------------------------------------------------------
+BOOL Input_IsLMBTrig()
+{
+    return (mouseTrig & 1) != 0;
+}
+
+//----- (00425C10) --------------------------------------------------------
+BOOL Input_IsRMBTrig()
+{
+    return (mouseTrig & 0x10) != 0;
 }

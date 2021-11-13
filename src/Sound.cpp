@@ -184,6 +184,29 @@ void Sound_Stop(int idx)
     _buffers[idx]->Stop();
 }
 
+BOOL loopsoundplaying_ = FALSE;
+int loopsound_ = 0;
+BOOL soundDisabled = FALSE;
+
+//----- (00421770) --------------------------------------------------------
+void ClearLoopSound()
+{
+    loopsoundplaying_ = FALSE;
+    loopsound_ = 0;
+}
+// 44C8AC: using guessed type int loopsoundplaying_;
+
+//----- (00421790) --------------------------------------------------------
+void StopLoopSound2()
+{
+    if (loopsoundplaying_)
+    {
+        Sound_Stop(loopsound_);
+        loopsoundplaying_ = FALSE;
+        loopsound_ = 0;
+    }
+}
+
 //----- (004217C0) --------------------------------------------------------
 BOOL LoadSound(const char *file_name, int idx)
 {
@@ -196,10 +219,6 @@ BOOL LoadSound(const char *file_name, int idx)
     pxtone_GetQuality(&chans, &sps, &bps, 0);
     return Sound_CreatePtNoise(Name, 0, chans, sps, bps, idx) != 0;
 }
-
-BOOL loopsoundplaying_ = FALSE;
-int loopsound_ = 0;
-BOOL soundDisabled = FALSE;
 
 //----- (00421870) --------------------------------------------------------
 void PlaySound(int idx)

@@ -3,36 +3,9 @@
 
 #include <windows.h>
 
-struct Caret
-{
-  int cond;
-  int x;
-  int y;
-  int xm;
-  int ym;
-  int xoff;
-  int yoff;
-  int w;
-  int h;
-  int surf;
-  int type;
-  int state;
-  int count1;
-  int count2;
-  int count3;
-  int life;
-  int damage;
-  int flag;
-  int shock;
-  int score;
-  int type2;
-  int child;
-  int rot1;
-  int count4;
-  int num;
-  int destroyHitVoice;
-  RECT rect;
-};
+#include "Object.h"
+
+typedef Object Caret;
 
 struct CaretAttr
 {
@@ -44,5 +17,8 @@ struct CaretAttr
 extern Caret g_Carets[32];
 
 BOOL SetCaret(int type, int x, int y, int param);
+
+void ResetCaret();
+void ResetCaret2();
 
 #endif

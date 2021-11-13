@@ -64,3 +64,17 @@ BOOL SetCaret(int type, int x, int y, int param)
 
     return 1;
 }
+
+//----- (00402F20) --------------------------------------------------------
+void ResetCaret()
+{
+    memset(g_Carets, 0, sizeof(g_Carets));
+    for (int i = 0; i < 32; ++i)
+        ;
+}
+
+//----- (00402F70) --------------------------------------------------------
+void ResetCaret2()
+{
+    ResetCaret();
+}

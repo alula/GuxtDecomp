@@ -409,13 +409,14 @@ BOOL DecodePximg(PximgDecodeInfo *info, int img_height, unsigned short hash_a, u
         cycle_count = PximgHashShuffle(info) >> 8;
         if (!cycle_count)
             cycle_count = 1;
+            
         do
         {
             cur_line = (cur_line + 1) % img_height;
-            if (*(info->line_indexes + 4 * cur_line) == -1)
+            if (info->line_indexes[cur_line] == -1)
                 --cycle_count;
         } while (cycle_count);
-        *(info->line_indexes + 4 * cur_line) = i;
+        info->line_indexes[cur_line] = i;
     }
 
     return TRUE;

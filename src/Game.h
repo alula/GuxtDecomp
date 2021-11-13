@@ -23,4 +23,6 @@ void SetReset(BOOL reset);
 
 BOOL GetGameReset();
 
+BOOL Call_Escape();
+
 #endif

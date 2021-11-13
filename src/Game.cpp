@@ -2,9 +2,22 @@
 #include <stdio.h>
 
 #include "Game.h"
+#include "Bullet.h"
+#include "Caret.h"
 #include "Draw.h"
+#include "Event.h"
+#include "Fade.h"
+#include "GameAttr.h"
+#include "Input.h"
+#include "Menu.h"
+#include "Object.h"
+#include "PlayRecord.h"
+#include "Ship.h"
 #include "Sound.h"
+#include "Stage.h"
 #include "Text.h"
+#include "TrigFuncs.h"
+#include "WinDebugDrag.h"
 #include "WinMain.h"
 
 BOOL g_FullScreenEnabled = FALSE;
@@ -138,16 +151,16 @@ int Game(HWND hWnd)
     ret = 0;
     v2 = 0;
     v4 = 1;
-#if 0
+
     InitTriangleTable();
     LoadPximgCharactor();
     ResetStage();
-    SetBackgroundColor_();
+    SetBackgroundColor();
     LoadPximgBullet();
     ResetCaret2();
     LoadPximgEntities();
     LoadPximgPlayerInit();
-    ResetEntityStageTotal();
+    ResetEntityStage();
     LoadPximgSymbol();
     if (InitGameAttr())
     {
@@ -167,22 +180,28 @@ int Game(HWND hWnd)
                 v4 = MenuLoop();
                 break;
             case 2:
-                v4 = ModeAction(hWnd);
+                // v4 = ModeAction(hWnd);
+                v4 = 1;
                 break;
             case 3:
-                v4 = RankingLoop();
+                // v4 = RankingLoop();
+                v4 = 1;
                 break;
             case 4:
-                v4 = RankingViewLoop();
+                // v4 = RankingViewLoop();
+                v4 = 1;
                 break;
             case 5:
-                v4 = KeyConfigLoop(hWnd, 0);
+                // v4 = KeyConfigLoop(hWnd, 0);
+                v4 = 1;
                 break;
             case 6:
-                v4 = KeyConfigLoop(hWnd, 1);
+                // v4 = KeyConfigLoop(hWnd, 1);
+                v4 = 1;
                 break;
             case 7:
-                v4 = ModeEnding();
+                // v4 = ModeEnding();
+                v4 = 1;
                 break;
             default:
                 goto LABEL_3;
@@ -194,7 +213,6 @@ int Game(HWND hWnd)
     CallClearCenterText();
     StopLoopSound2();
     FreePlayRecord();
-#endif
 
     return ret;
 }
@@ -284,4 +302,47 @@ void SetReset(BOOL reset)
 BOOL GetGameReset()
 {
     return GameReset;
+}
+
+//----- (0041A7B0) --------------------------------------------------------
+BOOL Call_Escape()
+{
+    unsigned int color; // [esp+0h] [ebp-18h]
+    BOOL result;        // [esp+4h] [ebp-14h]
+    RECT rcEscape;      // [esp+8h] [ebp-10h] BYREF
+
+    rcEscape.left = 0;
+    rcEscape.top = 0;
+    rcEscape.right = 80;
+    rcEscape.bottom = 24;
+    result = 0;
+    if (!Input_IsHeld(27))
+        return 0;
+    Input_UpdateTriggers();
+    color = GetSurfaceColor(17);
+    while (1)
+    {
+        Input_UpdateTriggers();
+        if (Input_IsTrig(112))
+            break;
+        if (Input_IsTrig(113))
+        {
+            SetReset(1);
+            break;
+        }
+        if (Input_IsTrig(27))
+        {
+            result = 1;
+            break;
+        }
+        PutBackground(&scWOffset_0, color);
+        PutRect(24, 68, &rcEscape, 22);
+        if (!Flip_SystemTask())
+        {
+            result = 1;
+            break;
+        }
+    }
+    Input_UpdateTriggers();
+    return result;
 }

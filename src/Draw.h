@@ -8,7 +8,7 @@ struct PximgDecodeInfo
     unsigned int height;
     int *line_indexes;
     unsigned int hash_a;
-    short hash_b;
+    unsigned int hash_b;
 };
 
 void ClearSurface(int surf_id);

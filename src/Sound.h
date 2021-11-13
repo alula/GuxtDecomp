@@ -21,6 +21,8 @@ void Sound_Replay(int idx);
 void Sound_Loop(int idx);
 void Sound_Stop(int idx);
 
+void ClearLoopSound();
+void StopLoopSound2();
 BOOL LoadSound(const char* file_name, int idx);
 
 void PlaySound(int idx);

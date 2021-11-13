@@ -246,6 +246,30 @@ int LivesIncreaseCount;
 int StageScroll;
 int dword_44C854;
 int StageScrollSpeed;
+int StageXOffset = 0x1000;
+
+//----- (00420EF0) --------------------------------------------------------
+void DoNothing(int a1)
+{
+    ;
+}
+
+//----- (00420F00) --------------------------------------------------------
+BOOL LoadPximgSymbol()
+{
+    LoadPximg("symbol", 11);
+    gScore = 0;
+    LivesIncreaseCount = 0;
+    return 1;
+}
+
+//----- (00420F30) --------------------------------------------------------
+BOOL ResetScore()
+{
+    gScore = 0;
+    LivesIncreaseCount = 0;
+    return 1;
+}
 
 //----- (00420F50) --------------------------------------------------------
 int GetScore()
@@ -296,4 +320,102 @@ void SetDefaultStageScroll()
 void SetStageScrollShift(int scroll)
 {
     StageScroll = scroll << 14;
+}
+
+//----- (00421090) --------------------------------------------------------
+void Set44C854(int a1)
+{
+    dword_44C854 = a1;
+}
+
+//----- (004210A0) --------------------------------------------------------
+void SetScrollSpeed(int speed)
+{
+    StageScrollSpeed = speed;
+}
+
+//----- (004210B0) --------------------------------------------------------
+void SetStageXOffset(int x_offset)
+{
+    StageXOffset = x_offset;
+}
+
+//----- (004210C0) --------------------------------------------------------
+void SetStageScroll_0(int scroll)
+{
+    StageScroll = scroll;
+}
+
+//----- (004210D0) --------------------------------------------------------
+int GetCheckpointScrollValue()
+{
+    return StageScroll / 1024 / 16;
+}
+
+//----- (004210F0) --------------------------------------------------------
+int GetStageXOffset()
+{
+    return StageXOffset;
+}
+
+//----- (00421100) --------------------------------------------------------
+int GetStageScroll()
+{
+    return StageScroll;
+}
+
+//----- (00421110) --------------------------------------------------------
+int Get44C854()
+{
+    return dword_44C854;
+}
+
+//----- (00421120) --------------------------------------------------------
+int GetStageScrollSpeed()
+{
+    return StageScrollSpeed;
+}
+
+//----- (00421130) --------------------------------------------------------
+void AlignStageScroll(Object *o)
+{
+    o->cond = StageXOffset;
+    o->y = StageXOffset + ((scWOffset_0.right - scWOffset_0.left) << 10);
+    o->x = StageScroll;
+    o->xm = StageScroll + ((scWOffset_0.bottom - scWOffset_0.top) << 10);
+}
+
+//----- (00421190) --------------------------------------------------------
+void ActStageScroll()
+{
+    LONG v0; // [esp+0h] [ebp-4h]
+
+    StageScroll += StageScrollSpeed;
+    v0 = (16 * GetStageHeight() - (scWOffset_0.bottom - scWOffset_0.top)) << 10;
+    if (StageScroll < 0)
+    {
+        StageScroll = 0;
+        if (StageScrollSpeed < 0)
+            StageScrollSpeed = 0;
+    }
+    if (StageScroll > v0)
+        StageScroll = v0;
+}
+
+//----- (00421200) --------------------------------------------------------
+void AddStageXOScroll(int *a1, int *a2)
+{
+    if (a1)
+        *a1 += StageXOffset;
+    if (a2)
+        *a2 += StageScroll;
+}
+
+//----- (00421240) --------------------------------------------------------
+void SubStageXOScroll(int *a1, int *a2)
+{
+    if (a1)
+        *a1 -= StageXOffset;
+    if (a2)
+        *a2 -= StageScroll;
 }
