@@ -43,11 +43,11 @@ void ResetButtonConfig(ButtonConfig *a1);
 int WriteButtonConfig(void *a1);
 BOOL ReadButtonConfig(ButtonConfig *a1);
 void LoadButtonConfig();
-signed int GetTrg();
+int GetTrg();
 int GetKeyHeld();
 void ClearTrg_(TriggerStruct *a1);
 void UpdateTrg(TriggerStruct *a1);
-signed int GetPlayerInput(unsigned char a1);
+int GetPlayerInput(unsigned char a1);
 
 BOOL InitDirectInput(HINSTANCE hinst, HWND hWnd);
 BOOL InitDirectInputDevice(HWND hWnd);

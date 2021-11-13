@@ -90,9 +90,9 @@ void LoadButtonConfig()
 }
 
 //----- (00401310) --------------------------------------------------------
-signed int GetTrg()
+int GetTrg()
 {
-    signed int v1;            // [esp+0h] [ebp-18h]
+    int v1;            // [esp+0h] [ebp-18h]
     DirectInputProcStruct a1; // [esp+4h] [ebp-14h] BYREF
 
     v1 = 0;
@@ -155,7 +155,7 @@ void UpdateTrg(TriggerStruct *a1)
 }
 
 //----- (00401500) --------------------------------------------------------
-signed int GetPlayerInput(unsigned char a1)
+int GetPlayerInput(unsigned char a1)
 {
     if ((a1 & 0x10) != 0 && (a1 & 0x40) != 0)
         return 5;

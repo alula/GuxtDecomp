@@ -27,7 +27,7 @@ void LoadPximgBullet();
 void ActBullet();
 void HitBulletMap();
 void MapCollideBulletProc(Object *bul, int a2, int a3, int a4);
-void PutBullet(Bullet *bul);
+void PutBullet(RECT *bul);
 int CountBullet(int type);
 BOOL CreateBullet(int type, int x, int y, int a4, int a5, int max);
 

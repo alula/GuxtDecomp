@@ -2,6 +2,7 @@
 #define __OBJECT_H__
 
 #include <windows.h>
+#include <stdint.h>
 
 struct Object
 {
@@ -25,7 +26,8 @@ struct Object
     int flag;
     int shock;
     int score;
-    int type2;
+    // this field stores pointers sometimes
+    intptr_t type2;
     int child;
     int rot1;
     int count4;
@@ -56,9 +58,19 @@ void PutObject(RECT *rcView, Object *obj, int frame_x, int frame_y);
 Object *GetNpcTable();
 void ResetEntities();
 void LoadPximgEntities();
+void ActNpc();
+void HitEntityMap();
+void MapCollideEntityProc(Object *a1, int a2, int a3, int a4);
+void PutNpChar2(RECT *rcView);
+void PutNpChar(RECT *rcView);
+
+void CreateEntity(int type, int x, int y, intptr_t type2);
+void DamageNpChar(Object *o, int dmg);
 int CountNpCharType(int type);
 void ClearReplaceNpChar(int a1, int a2);
 
+void HitNpCharBullet();
+void HitShipPowerup();
 void HitMapGeneric(Object *o, void (*func)(Object *, int, int, int), int a3);
 
 extern Object EntityTbl[256];

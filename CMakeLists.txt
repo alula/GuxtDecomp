@@ -14,14 +14,18 @@ add_executable(pxGame
     src/Event.cpp
     src/Fade.cpp
     src/Game.cpp
+    src/GameAct.cpp
     src/GameAttr.cpp
     src/Input.cpp
     src/KeyConfig.cpp
+    src/Map.cpp
     src/Menu.cpp
     src/Mutex.cpp
+    src/NpcAct000.cpp
     src/Object.cpp
     src/PixFile.cpp
     src/PlayRecord.cpp
+    src/Random.cpp
     src/Ship.cpp
     src/Sound.cpp
     src/Stage.cpp

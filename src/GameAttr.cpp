@@ -5,15 +5,13 @@
 #include "Caret.h"
 #include "Draw.h"
 #include "Game.h"
+#include "Map.h"
 #include "Ship.h"
 #include "Sound.h"
 #include "Stage.h"
 #include "Text.h"
 #include "WinMain.h"
 
-StageState g_StageState;
-
-#define NUM_MUSIC 11
 const char *musicTable[NUM_MUSIC] = {
     "-",
     "opening",
@@ -164,78 +162,32 @@ BOOL GameStart()
     return 1;
 }
 
-//----- (004196C0) --------------------------------------------------------
-int GetCurrentStage()
+static int GameDelay;
+
+//----- (00421960) --------------------------------------------------------
+void ResetGameDelay()
 {
-    return g_StageState.currentStage;
+    GameDelay = 0;
 }
 
-//----- (004196D0) --------------------------------------------------------
-int IncreaseLives()
+//----- (00421970) --------------------------------------------------------
+void SetGameDelay(int a1)
 {
-    PlaySound(41);
-    return ++g_StageState.shipLivesCount;
+    GameDelay = a1;
 }
 
-//----- (004196F0) --------------------------------------------------------
-void SetCurrentStage(int stage)
+//----- (00421980) --------------------------------------------------------
+BOOL IsGameDelay()
 {
-    g_StageState.currentStage = stage;
+    return GameDelay != 0;
 }
 
-//----- (00419D50) --------------------------------------------------------
-void PutHUD(RECT *rcView)
+//----- (004219A0) --------------------------------------------------------
+BOOL GetGameDelayed()
 {
-    RECT v1;   // [esp+4h] [ebp-30h] BYREF
-    RECT rect; // [esp+14h] [ebp-20h] BYREF
-    RECT v3;   // [esp+24h] [ebp-10h] BYREF
-
-    v1.left = 96;
-    v1.top = 0;
-    v1.right = 112;
-    v1.bottom = 8;
-    rect.left = 72;
-    rect.top = 80;
-    rect.right = 104;
-    rect.bottom = 88;
-    v3.left = 120;
-    v3.top = 48;
-    v3.right = 128;
-    v3.bottom = 56;
-    switch (g_StageState.state)
-    {
-    case 0:
-        PutRect(48, 56, &v1, 11);
-        if ((g_StageState.gameFlags & 2) != 0)
-            PutRect(64, 56, &v3, 11);
-        else
-            PutNumber(rcView, 64, 56, g_StageState.shipLivesCount, 1, 0);
-        break;
-    case 10:
-    case 30:
-    case 50:
-        PutScore(rcView, 36, 4);
-        PutRect(4, 4, &v1, 11);
-        if ((g_StageState.gameFlags & 2) != 0)
-            PutRect(20, 4, &v3, 11);
-        else
-            PutNumber(rcView, 20, 4, g_StageState.shipLivesCount, 1, 0);
-        break;
-    case 20:
-        PutRect(24, 56, &rect, 11);
-        PutScore(rcView, 52, 56);
-        break;
-    default:
-        break;
-    }
-
-    PutTextBuffer(rcView);
-}
-
-//----- (00419EF0) --------------------------------------------------------
-void PutCenter()
-{
-    CallPutCenterText();
+    if (GameDelay && GameDelay != -1)
+        --GameDelay;
+    return GameDelay != 0;
 }
 
 static int ScoreTbl[8] = {0, 1, 2, 5, 10, 20, 50, 100};
@@ -313,7 +265,7 @@ void PutScore(RECT *rcView, int x, int y)
 //----- (00421040) --------------------------------------------------------
 void SetDefaultStageScroll()
 {
-    StageScroll = (16 * GetStageHeight() - (scWOffset_0.bottom - scWOffset_0.top)) << 10;
+    StageScroll = (16 * GetMapHeight() - (scWOffset_0.bottom - scWOffset_0.top)) << 10;
 }
 
 //----- (00421070) --------------------------------------------------------
@@ -377,12 +329,12 @@ int GetStageScrollSpeed()
 }
 
 //----- (00421130) --------------------------------------------------------
-void AlignStageScroll(Object *o)
+void GetStageRect(RECT *a1)
 {
-    o->cond = StageXOffset;
-    o->y = StageXOffset + ((scWOffset_0.right - scWOffset_0.left) << 10);
-    o->x = StageScroll;
-    o->xm = StageScroll + ((scWOffset_0.bottom - scWOffset_0.top) << 10);
+  a1->left = StageXOffset;
+  a1->right = StageXOffset + ((scWOffset_0.right - scWOffset_0.left) << 10);
+  a1->top = StageScroll;
+  a1->bottom = StageScroll + ((scWOffset_0.bottom - scWOffset_0.top) << 10);
 }
 
 //----- (00421190) --------------------------------------------------------
@@ -391,7 +343,7 @@ void ActStageScroll()
     LONG v0; // [esp+0h] [ebp-4h]
 
     StageScroll += StageScrollSpeed;
-    v0 = (16 * GetStageHeight() - (scWOffset_0.bottom - scWOffset_0.top)) << 10;
+    v0 = (16 * GetMapHeight() - (scWOffset_0.bottom - scWOffset_0.top)) << 10;
     if (StageScroll < 0)
     {
         StageScroll = 0;

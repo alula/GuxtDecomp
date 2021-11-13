@@ -4,18 +4,8 @@
 #include <windows.h>
 #include "Object.h"
 
-struct StageState
-{
-    int state;
-    int centerTextMiscTimer;
-    int currentStage;
-    int currentMusic;
-    int shipLivesCount;
-    int checkpointStageScroll;
-    int gameFlags;
-};
-
-extern StageState g_StageState;
+#define NUM_MUSIC 11
+extern const char *musicTable[NUM_MUSIC];
 
 BOOL InitGameAttr();
 
@@ -34,12 +24,11 @@ BOOL GetGameCleared();
 
 BOOL ChangeMusic(int idx);
 BOOL GameStart();
-int GetCurrentStage();
-int IncreaseLives();
-void SetCurrentStage(int stage);
 
-void PutHUD(RECT *rcView);
-void PutCenter();
+void ResetGameDelay();
+void SetGameDelay(int a1);
+BOOL IsGameDelay();
+BOOL GetGameDelayed();
 
 extern int gScore;
 extern int LivesIncreaseCount;
@@ -66,8 +55,7 @@ int GetStageXOffset();
 int GetStageScroll();
 int Get44C854();
 int GetStageScrollSpeed();
-
-void AlignStageScroll(Object *o);
+void GetStageRect(RECT *a1);
 void ActStageScroll();
 void AddStageXOScroll(int *a1, int *a2);
 void SubStageXOScroll(int *a1, int *a2);

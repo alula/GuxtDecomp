@@ -16,9 +16,10 @@ struct CaretAttr
 
 extern Caret g_Carets[32];
 
-BOOL SetCaret(int type, int x, int y, int param);
-
 void ResetCaret();
 void ResetCaret2();
+void ActCaret();
+void PutCaret(RECT *rcView);
+BOOL SetCaret(int type, int x, int y, intptr_t param);
 
 #endif

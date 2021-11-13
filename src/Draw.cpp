@@ -38,7 +38,7 @@ static void ReleaseSurfaceName(char **p);
 static BOOL AllocSurfaceName(char **a1, size_t a2);
 
 //----- (00422B90) --------------------------------------------------------
-void ClearSurface(signed int surf_id)
+void ClearSurface(int surf_id)
 {
     if (surf_id >= 64)
         return;
@@ -752,7 +752,7 @@ void PutRectOutline(const RECT *rcView, const RECT *rc, unsigned int color)
 }
 
 //----- (00424080) --------------------------------------------------------
-void BlitSurface(const RECT *rc, unsigned int color, signed int surf_no)
+void BlitSurface(const RECT *rc, unsigned int color, int surf_no)
 {
     RECT rcWork; // [esp+0h] [ebp-78h] BYREF
     DDBLTFX blt; // [esp+10h] [ebp-68h] BYREF
@@ -987,7 +987,7 @@ void Flip_Screen2()
 }
 
 //----- (004247F0) --------------------------------------------------------
-BOOL __cdecl ResetSurfaceTbl(HWND hwnd, int mag)
+BOOL  ResetSurfaceTbl(HWND hwnd, int mag)
 {
     BOOL load_from_file; // [esp+0h] [ebp-124h]
     char path[268];      // [esp+4h] [ebp-120h] BYREF

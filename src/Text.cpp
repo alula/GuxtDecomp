@@ -4,7 +4,7 @@
 #include "Draw.h"
 
 //----- (00417BD0) --------------------------------------------------------
-void PutNumber(RECT *rcView, int x, int y, signed int value, char flags, unsigned int surf)
+void PutNumber(RECT *rcView, int x, int y, int value, char flags, unsigned int surf)
 {
     int v6[7];     // [esp+0h] [ebp-10Ch]
     int nx;        // [esp+1Ch] [ebp-F0h]
@@ -132,8 +132,8 @@ int PutTextObject(RECT *rcView, int pos_x, int pos_y, const char *text, int a5, 
 {
     int x;               // [esp+0h] [ebp-24h]
     int y;               // [esp+4h] [ebp-20h]
-    signed int text_len; // [esp+8h] [ebp-1Ch]
-    signed int i;        // [esp+Ch] [ebp-18h]
+    int text_len; // [esp+8h] [ebp-1Ch]
+    int i;        // [esp+Ch] [ebp-18h]
     int v11;             // [esp+10h] [ebp-14h]
     RECT a3;             // [esp+14h] [ebp-10h] BYREF
 

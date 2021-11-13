@@ -7,9 +7,11 @@
 #include "Draw.h"
 #include "Event.h"
 #include "Fade.h"
+#include "GameAct.h"
 #include "GameAttr.h"
 #include "Input.h"
 #include "KeyConfig.h"
+#include "Map.h"
 #include "Menu.h"
 #include "Object.h"
 #include "PlayRecord.h"
@@ -155,7 +157,7 @@ int Game(HWND hWnd)
 
     InitTriangleTable();
     LoadPximgCharactor();
-    ResetStage();
+    ResetMap();
     SetBackgroundColor();
     LoadPximgBullet();
     ResetCaret2();
@@ -181,8 +183,7 @@ int Game(HWND hWnd)
                 v4 = MenuLoop();
                 break;
             case 2:
-                // v4 = ModeAction(hWnd);
-                v4 = 1;
+                v4 = ModeAction(hWnd);
                 break;
             case 3:
                 // v4 = RankingLoop();
@@ -295,7 +296,6 @@ void SetReset(BOOL reset)
 {
     GameReset = reset;
 }
-// 44C49C: using guessed type int GameReset;
 
 //----- (0041A7A0) --------------------------------------------------------
 BOOL GetGameReset()

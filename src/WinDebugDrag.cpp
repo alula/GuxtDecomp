@@ -1,8 +1,7 @@
 #include <windows.h>
 
+#include "Stage.h"
 #include "WinDebugDrag.h"
-
-CHAR szFile[MAX_PATH];
 
 //----- (004192A0) --------------------------------------------------------
 void DragEnable(HWND hWnd)

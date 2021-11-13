@@ -431,7 +431,7 @@ void HitBulletMap()
 }
 
 //----- (00402360) --------------------------------------------------------
-void MapCollideBulletProc(Bullet *bul, int a2, int a3, int a4)
+void MapCollideBulletProc(Object *bul, int a2, int a3, int a4)
 {
     if ((bul->cond & 4) == 0)
     {

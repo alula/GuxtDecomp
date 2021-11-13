@@ -61,7 +61,7 @@ void PutBackground(const RECT *rcView, int fill_color);
 
 void PutRectOutline(const RECT *rcView, const RECT *rc, unsigned int color);
 
-void BlitSurface(const RECT *rc, unsigned int color, signed int surf_no);
+void BlitSurface(const RECT *rc, unsigned int color, int surf_no);
 
 void CortBox(const RECT *rcView, const RECT *rc, unsigned int color);
 
@@ -81,6 +81,6 @@ BOOL DoNothing2(int some_surf_id);
 
 void Flip_Screen2();
 
-BOOL __cdecl ResetSurfaceTbl(HWND hwnd, int mag);
+BOOL  ResetSurfaceTbl(HWND hwnd, int mag);
 
 #endif

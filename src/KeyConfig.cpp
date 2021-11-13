@@ -154,6 +154,7 @@ BOOL ConfigJoystick(ButtonConfig *conf)
     }
 }
 
+//----- (0041AC70) --------------------------------------------------------
 void PutKeyConfig(RECT *rcView, ButtonConfigIdx *a2, int is_joystick, BOOL a4)
 {
     RECT rcCursor[2]; // [esp+0h] [ebp-84h] BYREF

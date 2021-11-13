@@ -107,7 +107,7 @@ void ReleaseDirectSound()
 }
 
 //----- (00424AC0) --------------------------------------------------------
-BOOL Sound_CreateWAV(const char *lpName, const char *lpType, signed int a3)
+BOOL Sound_CreateWAV(const char *lpName, const char *lpType, int a3)
 {
     // TODO
     return TRUE;
@@ -266,7 +266,7 @@ void SetSoundDisabled(BOOL disabled)
 }
 
 //----- (00424EF0) --------------------------------------------------------
-BOOL Sound_CreatePtNoise(const char *lpName, const char *lpType, int channels, int sps, int bps, signed int sfx_idx)
+BOOL Sound_CreatePtNoise(const char *lpName, const char *lpType, int channels, int sps, int bps, int sfx_idx)
 {
     void *v7;         // [esp+0h] [ebp-44h] BYREF
     DWORD v8;         // [esp+4h] [ebp-40h] BYREF

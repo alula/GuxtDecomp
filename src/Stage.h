@@ -3,30 +3,45 @@
 
 #include <windows.h>
 
-struct TileMap
+#include "Event.h"
+#include "Input.h"
+
+struct StageState
 {
-    int width;
-    int height;
-    unsigned char *data;
+    int state;
+    int centerTextMiscTimer;
+    int currentStage;
+    int currentMusic;
+    int shipLivesCount;
+    int checkpointStageScroll;
+    int gameFlags;
 };
 
-extern TileMap mapStage;
-extern TileMap attrStage;
+extern EntityStageStruct EntityStage;
+extern int EntityStageCount;
+extern char szFile[MAX_PATH];
+extern StageState g_StageState;
 
-BOOL ResetStage();
-int GetStageHeight();
+void PrepPxeve();
+BOOL ResetEntityStage();
+BOOL LoadPxeve(int stage);
+BOOL LoadPximgEnemy(int stage);
+void ZeroEntityCount();
+BOOL SetStageEntities();
+BOOL SetStageEntitiesPartial();
 
-int GetTile(int x, int y);
-void ShiftTile(int x, int y);
-BOOL ResetStageSurface();
-void ResetStageText();
-void FreeStageText();
-void PutStageText(const char *text);
-
-void PutTextBuffer(RECT *rcView);
-
-void PutCenterText();
-
-BOOL ClearTileMap(TileMap *map);
+int GetCurrentStage();
+int IncreaseLives();
+void SetCurrentStage(int stage);
+BOOL StartStage();
+BOOL InitStage();
+int SetCheckpointScroll();
+BOOL CheckStageClear(int a1);
+BOOL ShipCrushProc2();
+int ActStageState(TriggerStruct *a1);
+int WriteGameCleared();
+void EndRecordPlayback();
+void PutHUD(RECT *rcView);
+void PutCenter();
 
 #endif
