@@ -7,4 +7,20 @@ extern BOOL g_FullScreenEnabled;
 extern BOOL GameFocussed;
 extern int magnification;
 
+BOOL LoadGenericData();
+
+int Game(HWND hWnd);
+
+BOOL LoadPximg(const char *file_name, int surf_no);
+
+int CountFramePerSecond();
+
+void PutFramePerSecond();
+
+BOOL Flip_SystemTask();
+
+void SetReset(BOOL reset);
+
+BOOL GetGameReset();
+
 #endif

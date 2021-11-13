@@ -12,7 +12,7 @@ public:
     ~Mutex();
 
     BOOL Start(const char* name, const char* mutex_name);
-    BOOL MapFile(const char *name, const char *mutex_name, void* a4);
+    BOOL MapFile(const char *name, const char *mutex_name, HWND a4);
 };
 
 #endif

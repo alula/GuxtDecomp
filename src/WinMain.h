@@ -5,7 +5,10 @@
 
 extern int ScreenRenderWidth;
 extern int ScreenRenderHeight;
-extern char *windowName[4];
+extern BOOL TimerFirstCountFlag;
+extern const char *RankingFile;
+extern RECT scWOffset_0;
+extern const char *windowName[4];
 extern LPCSTR lpClassName;
 extern int screenSize;
 extern LPCSTR lpName;
@@ -17,5 +20,9 @@ extern HINSTANCE g_Instance;
 extern char temp_guxtPath[MAX_PATH];
 extern HWND hWnd;
 extern HMENU hMenu;
+
+BOOL PollMessages();
+
+void SaveWindowSettings(HWND hWnd);
 
 #endif

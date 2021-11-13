@@ -3,6 +3,12 @@
 
 #include <windows.h>
 
+BOOL LoadMusic(const char *file_name);
+BOOL StartMusic(long start_sample);
+void SetMusicVolume(long msec);
+void FadeMusic();
+void ResumeMusic();
+
 void AssignDirectSound(void *a1);
 BOOL UnusedInitDirectSound(HWND hwnd);
 void ReleaseDirectSound();
@@ -14,5 +20,16 @@ void Sound_ReleaseBuffer(int idx);
 void Sound_Replay(int idx);
 void Sound_Loop(int idx);
 void Sound_Stop(int idx);
+
+BOOL LoadSound(const char* file_name, int idx);
+
+void PlaySound(int idx);
+void PlayLoopSound(int idx);
+void StopLoopSound(int a1);
+void PauseLoopSound();
+void ResumeLoopSound();
+void SetSoundDisabled(BOOL disabled);
+
+BOOL Sound_CreatePtNoise(const char *lpName, const char *lpType, int a3, int a4, int a5, signed int sfx_idx);
 
 #endif

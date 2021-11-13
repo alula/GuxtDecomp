@@ -32,7 +32,9 @@ BOOL g_ScrambleSprites;
 BOOL g_IsFullscreen;
 HGDIOBJ h;
 
-static void ReleaseSurfaceName(const char **p);
+static BOOL MakeSurface(LPDIRECTDRAWSURFACE *ddSurf, int width, int height, BOOL system_memory);
+static void PreparePximg(LPDIRECTDRAWSURFACE ddSurf, HGDIOBJ h, int wSrc, int hSrc);
+static void ReleaseSurfaceName(char **p);
 static BOOL AllocSurfaceName(char **a1, size_t a2);
 
 //----- (00422B90) --------------------------------------------------------
@@ -54,7 +56,7 @@ void ClearSurface(signed int surf_id)
 }
 
 //----- (00422C20) --------------------------------------------------------
-static void ReleaseSurfaceName(const char **p)
+static void ReleaseSurfaceName(char **p)
 {
     if (!*p)
         return;
@@ -144,7 +146,7 @@ void EndDirectDraw(HWND hwnd)
 {
     ClearSurfaceTbl();
     ReleaseSurfaceA();
-    
+
     lpDD->SetCooperativeLevel(hwnd, DISCL_BACKGROUND);
     if (lpDD) // ??????????
     {
@@ -317,7 +319,7 @@ static BOOL AllocSurfaceName(char **ptr, size_t len)
 }
 
 //----- (004233C0) --------------------------------------------------------
-BOOL MakeSurface(LPDIRECTDRAWSURFACE *ddSurf, int width, int height, BOOL system_memory)
+static BOOL MakeSurface(LPDIRECTDRAWSURFACE *ddSurf, int width, int height, BOOL system_memory)
 {
     DDSURFACEDESC desc;
     DDCOLORKEY key;
@@ -346,7 +348,7 @@ BOOL MakeSurface(LPDIRECTDRAWSURFACE *ddSurf, int width, int height, BOOL system
 }
 
 //----- (00423480) --------------------------------------------------------
-void PreparePximg(LPDIRECTDRAWSURFACE ddSurf, HGDIOBJ h, int wSrc, int hSrc)
+static void PreparePximg(LPDIRECTDRAWSURFACE ddSurf, HGDIOBJ h, int wSrc, int hSrc)
 {
     PximgDecodeInfo info;
 

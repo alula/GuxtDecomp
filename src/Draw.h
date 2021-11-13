@@ -35,10 +35,6 @@ BOOL Flip_Screen();
 
 BOOL MakeSurface_Pximg(char *name, int surf_no, BOOL load_from_file, BOOL system_memory);
 
-BOOL MakeSurface(LPDIRECTDRAWSURFACE *ddSurf, int width, int height, BOOL system_memory);
-
-void PreparePximg(LPDIRECTDRAWSURFACE ddSurf, HGDIOBJ h, int wSrc, int hSrc);
-
 BOOL DecodePximg(PximgDecodeInfo *info, int img_height, unsigned short hash_a, unsigned short hash_b);
 
 unsigned short PximgHashShuffle(PximgDecodeInfo *info);
