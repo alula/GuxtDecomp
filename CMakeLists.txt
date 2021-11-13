@@ -16,6 +16,7 @@ add_executable(pxGame
     src/Game.cpp
     src/GameAttr.cpp
     src/Input.cpp
+    src/KeyConfig.cpp
     src/Menu.cpp
     src/Mutex.cpp
     src/Object.cpp

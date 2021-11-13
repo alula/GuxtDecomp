@@ -18,12 +18,12 @@ static int isKeyHeld = 0;
 //----- (00401130) --------------------------------------------------------
 void ResetKeyboardConfig(ButtonConfig *a1)
 {
-    a1->left = 37;
-    a1->right = 39;
-    a1->up = 38;
-    a1->down = 40;
-    a1->shot = 17;
-    a1->pause = 9;
+    a1->left = VK_LEFT;
+    a1->right = VK_RIGHT;
+    a1->up = VK_UP;
+    a1->down = VK_DOWN;
+    a1->shot = VK_CONTROL;
+    a1->pause = VK_TAB;
 }
 
 //----- (00401160) --------------------------------------------------------
@@ -140,10 +140,10 @@ int GetKeyHeld()
 //----- (00401490) --------------------------------------------------------
 void ClearTrg_(TriggerStruct *a1)
 {
-  Input_Reset();
-  a1->hold = GetTrg();
-  a1->trig = a1->hold;
-  a1->prev = 0;
+    Input_Reset();
+    a1->hold = GetTrg();
+    a1->trig = a1->hold;
+    a1->prev = 0;
 }
 
 //----- (004014C0) --------------------------------------------------------

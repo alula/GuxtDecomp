@@ -9,6 +9,7 @@
 #include "Fade.h"
 #include "GameAttr.h"
 #include "Input.h"
+#include "KeyConfig.h"
 #include "Menu.h"
 #include "Object.h"
 #include "PlayRecord.h"
@@ -192,12 +193,10 @@ int Game(HWND hWnd)
                 v4 = 1;
                 break;
             case 5:
-                // v4 = KeyConfigLoop(hWnd, 0);
-                v4 = 1;
+                v4 = KeyConfigLoop(hWnd, 0);
                 break;
             case 6:
-                // v4 = KeyConfigLoop(hWnd, 1);
-                v4 = 1;
+                v4 = KeyConfigLoop(hWnd, 1);
                 break;
             case 7:
                 // v4 = ModeEnding();

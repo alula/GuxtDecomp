@@ -31,6 +31,12 @@ struct ButtonConfig
     unsigned char joyPause;
 };
 
+// todo some static_assert() to ensure sizeof(ButtonConfig) == sizeof(ButtonConfigIdx)
+struct ButtonConfigIdx
+{
+    unsigned char btns[8];
+};
+
 void ResetKeyboardConfig(ButtonConfig *a1);
 void ResetJoystickConfig(ButtonConfig *a1);
 void ResetButtonConfig(ButtonConfig *a1);
