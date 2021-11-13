@@ -1,10 +1,16 @@
 # Guxt Decompilation Project
 
+A decompilation of 2007 freeware shmup by Studio Pixel.
+
 WIP.
 
 Mostly based on work of [@tilderain](https://github.com/tilderain).
 
 Reverse engineering of remaining parts and various fixups was done by me (Alula).
+
+You need data files from original game and place them in same directory as your freshly compiled `pxGame.exe`.
+
+Get them from there: https://studiopixel.jp/binaries/guxt_1020_wz.zip
 
 Note from IDB:
 
