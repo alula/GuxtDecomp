@@ -46,9 +46,9 @@ static int GetCompileVersion(int *a, int *b, int *c, int *d)
             if (GetFileVersionInfoA(Filename, 0, dwLen, lpData) && VerQueryValueA(lpData, "\\", (void **)&lpBuffer, &puLen))
             {
                 version[0] = HIWORD(lpBuffer->dwFileVersionMS);
-                version[1] = lpBuffer->dwFileVersionMS;
+                version[1] = LOWORD(lpBuffer->dwFileVersionMS);
                 version[2] = HIWORD(lpBuffer->dwFileVersionLS);
-                version[3] = lpBuffer->dwFileVersionLS;
+                version[3] = LOWORD(lpBuffer->dwFileVersionLS);
                 if (a)
                     *a = version[0];
                 if (b)

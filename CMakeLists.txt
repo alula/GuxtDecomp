@@ -1,5 +1,11 @@
 cmake_minimum_required(VERSION 3.18)
 project(Guxt LANGUAGES CXX)
+ENABLE_LANGUAGE(RC)
+    
+if(MINGW)
+    set(CMAKE_RC_COMPILER_INIT i686-w64-mingw32-windres)
+    SET(CMAKE_RC_COMPILE_OBJECT "<CMAKE_RC_COMPILER> <FLAGS> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
+endif(MINGW)
 
 add_executable(pxGame 
     src/Bullet.cpp

@@ -403,7 +403,7 @@ static LRESULT __stdcall GameWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM 
                 PostMessageA(hWnd, 0xA1u, 2u, lParam);
             return 0;
         case 0x204u:
-            Point.x = lParam;
+            Point.x = LOWORD(lParam);
             Point.y = HIWORD(lParam);
             ClientToScreen(hWnd, &Point);
             v6 = Point;
