@@ -29,6 +29,15 @@ add_executable(pxGame
     src/WinDebugDrag.cpp
     src/WinMain.cpp
     src/pxGame.rc
+
+    src/pxtone/pxtoneNoise.cpp
+    src/pxtone/pxtnDescriptor.cpp
+    src/pxtone/pxtnMem.cpp
+    src/pxtone/pxtnPulse_Frequency.cpp
+    src/pxtone/pxtnPulse_Oscillator.cpp
+    src/pxtone/pxtnPulse_PCM.cpp
+    src/pxtone/pxtnPulse_Noise.cpp
+    src/pxtone/pxtnPulse_NoiseBuilder.cpp
 )
 
 target_link_directories(pxGame PRIVATE

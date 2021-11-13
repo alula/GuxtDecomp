@@ -732,7 +732,7 @@ static BOOL SaveWindowRect(HWND hWnd, const char *file_name)
         wndpl.rcNormalPosition = rcPos;
     }
 
-    sprintf(path, "%s\\%s", *PtrToTempGuxt, file_name);
+    sprintf(path, "%s\\%s", PtrToTempGuxt, file_name);
     fd = fopen(path, "wb");
     if (!fd)
         return FALSE;

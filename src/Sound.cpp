@@ -3,8 +3,10 @@
 #include <dsound.h>
 
 #include "Sound.h"
+#include "PixFile.h"
 #include "WinMain.h"
 #include "pxtone.h"
+#include "pxtone/pxtoneNoise.h"
 
 static long pxtoneFadeReturnValue = 0;
 static BOOL isMusicPlaying = FALSE;
@@ -217,7 +219,7 @@ BOOL LoadSound(const char *file_name, int idx)
 
     sprintf(Name, "%s\\%s.%s", dataPath, file_name, "ptnoise");
     pxtone_GetQuality(&chans, &sps, &bps, 0);
-    return Sound_CreatePtNoise(Name, 0, chans, sps, bps, idx) != 0;
+    return Sound_CreatePtNoise(Name, NULL, chans, sps, bps, idx) != 0;
 }
 
 //----- (00421870) --------------------------------------------------------
@@ -264,8 +266,77 @@ void SetSoundDisabled(BOOL disabled)
 }
 
 //----- (00424EF0) --------------------------------------------------------
-BOOL Sound_CreatePtNoise(const char *lpName, const char *lpType, int a3, int a4, int a5, signed int sfx_idx)
+BOOL Sound_CreatePtNoise(const char *lpName, const char *lpType, int channels, int sps, int bps, signed int sfx_idx)
 {
-    // TODO
-    return TRUE;
+    void *v7;         // [esp+0h] [ebp-44h] BYREF
+    DWORD v8;         // [esp+4h] [ebp-40h] BYREF
+    DSBUFFERDESC v9;  // [esp+8h] [ebp-3Ch] BYREF
+    WAVEFORMATEX v10; // [esp+1Ch] [ebp-28h] BYREF
+    int v11;          // [esp+30h] [ebp-14h] BYREF
+    void *v12;        // [esp+34h] [ebp-10h] BYREF
+    BOOL result;      // [esp+38h] [ebp-Ch]
+    DWORD v14;        // [esp+3Ch] [ebp-8h] BYREF
+    char *v15;        // [esp+40h] [ebp-4h] BYREF
+    pxtoneNoise noise;
+    pxtnDescriptor desc;
+    PixFile file;
+
+    // This function has been adapted to slightly newer PxTone code, so it's not accurately decompiled.
+
+    result = FALSE;
+    if (!dsInstance)
+        return TRUE;
+
+    if (sfx_idx < 0 || sfx_idx >= 64)
+        goto err;
+    {
+        OpenResource_(NULL, lpName, lpType, &file);
+        desc.set_file_r(file.fp);
+
+        if (!noise.init()) 
+            goto err;
+
+        noise.quality_set(channels, sps, bps);
+
+        if (!noise.generate(&desc, (void **)&v15, &v11))
+            goto err;
+
+        memset(&v10, 0, sizeof(v10));
+
+        v10.cbSize = 0;
+        v10.wFormatTag = 1;
+        v10.nChannels = channels;
+        v10.nSamplesPerSec = sps;
+        v10.wBitsPerSample = bps;
+        v10.nBlockAlign = v10.wBitsPerSample * v10.nChannels / 8;
+        v10.nAvgBytesPerSec = v10.nSamplesPerSec * v10.nBlockAlign;
+
+        memset(&v9, 0, sizeof(v9));
+        v9.dwSize = 20;
+        v9.dwFlags = 32994;
+        v9.dwBufferBytes = v11;
+        v9.lpwfxFormat = &v10;
+
+        if (!dsInstance->CreateSoundBuffer(&v9, &_buffers[sfx_idx], 0) && !_buffers[sfx_idx]->Lock(0, v11, &v12, &v8, &v7, &v14, 0))
+        {
+            memcpy(v12, v15, v8);
+            if (v14)
+                memcpy(v7, &v15[v8], v14);
+            _buffers[sfx_idx]->Unlock(v12, v8, v7, v14);
+
+            result = TRUE;
+        }
+    }
+
+err:
+    if (!result)
+    {
+        if (_buffers[sfx_idx])
+        {
+            _buffers[sfx_idx]->Release();
+            _buffers[sfx_idx] = 0;
+        }
+    }
+
+    return result;
 }
