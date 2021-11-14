@@ -2,7 +2,7 @@
 
 A decompilation of 2007 freeware shmup by Studio Pixel.
 
-WIP.
+100% playable.
 
 Mostly based on work of [@tilderain](https://github.com/tilderain).
 
