@@ -1051,7 +1051,7 @@ void ActNpc111_B6Laser(Object *o)
 }
 
 //----- (004156A0) --------------------------------------------------------
-void __cdecl ActNpc112(Object *o)
+void ActNpc112(Object *o)
 {
     static RECT rcNpc112[5] = {
         {0, 0, 0, 0},

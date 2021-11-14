@@ -1373,7 +1373,7 @@ void ActNpc057_Boss3TurretSpawner(Object *o)
 }
 
 //----- (0040D170) --------------------------------------------------------
-void __cdecl ActNpc058_B3Turret(Object *o)
+void ActNpc058_B3Turret(Object *o)
 {
     int v2; // [esp+0h] [ebp-3Ch]
     int x;  // [esp+4h] [ebp-38h] BYREF

@@ -13,9 +13,10 @@
 #include "KeyConfig.h"
 #include "Map.h"
 #include "Menu.h"
+#include "NpcShip.h"
 #include "Object.h"
 #include "PlayRecord.h"
-#include "NpcShip.h"
+#include "Ranking.h"
 #include "Sound.h"
 #include "Stage.h"
 #include "Text.h"
@@ -186,12 +187,10 @@ int Game(HWND hWnd)
                 v4 = ModeAction(hWnd);
                 break;
             case 3:
-                // v4 = RankingLoop();
-                v4 = 1;
+                v4 = RankingLoop();
                 break;
             case 4:
-                // v4 = RankingViewLoop();
-                v4 = 1;
+                v4 = RankingViewLoop();
                 break;
             case 5:
                 v4 = KeyConfigLoop(hWnd, 0);

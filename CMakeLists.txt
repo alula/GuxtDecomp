@@ -32,6 +32,7 @@ add_executable(pxGame
     src/Object.cpp
     src/PixFile.cpp
     src/PlayRecord.cpp
+    src/Ranking.cpp
     src/Random.cpp
     src/Sound.cpp
     src/Stage.cpp
