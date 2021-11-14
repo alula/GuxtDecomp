@@ -230,19 +230,25 @@ BOOL InitStage()
         SetLife(debugLife);
     }
 
-    if (LoadPxeve(g_StageState.currentStage) && StartStage())
+    if (!LoadPxeve(g_StageState.currentStage))
+        goto err;
+
+    if (!StartStage())
+        goto err;
+
+    if (debugStage)
     {
-        if (debugStage)
+        if (debugStageScroll)
         {
-            if (debugStageScroll)
-            {
-                SetStageScrollShift(debugStageScroll);
-                SetStageEntitiesPartial();
-            }
-            debugStage = 0;
+            SetStageScrollShift(debugStageScroll);
+            SetStageEntitiesPartial();
         }
-        result = 1;
+        debugStage = 0;
     }
+
+    result = 1;
+
+err:
     return result;
 }
 

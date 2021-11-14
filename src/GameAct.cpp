@@ -34,7 +34,7 @@ int ModeAction(HWND a1)
 
     v10 = 0;
     a2 = GetSurfaceColor(16);
-    
+
     if (GameStart())
     {
         SetSoundDisabled(0);
@@ -50,23 +50,24 @@ int ModeAction(HWND a1)
             NewPlayRecord();
             v6 = &a1a;
         }
-        
+
         InitStage();
         while (1)
         {
-            
+
             ++v10;
             if (Call_Escape())
             {
                 v7 = 0;
                 goto LABEL_27;
             }
+
             if (GetGameReset())
             {
                 v7 = 1;
                 goto LABEL_27;
             }
-            
+
             Input_UpdateTriggers();
             a1a.hold = GetTrg();
             if (GetInReplay())
@@ -78,7 +79,7 @@ int ModeAction(HWND a1)
             {
                 RecordPlayRecord(a1a.hold);
             }
-            
+
             UpdateTrg(&a1a);
             if (GetInReplay() && (a1a.hold & 1) != 0)
                 SetReset(1);
@@ -88,7 +89,7 @@ int ModeAction(HWND a1)
             v7 = ActStageState(&a1a);
             if (v7 != 2)
                 goto LABEL_27;
-            
+
             if (!GetGameDelayed())
             {
                 SetStageEntities();
@@ -104,7 +105,7 @@ int ModeAction(HWND a1)
                 HitBulletMap();
                 ActFade();
             }
-            
+
             if (!GetInReplay() || (a1a.hold & 0x40) == 0 || (v10 & 0xF) == 0)
             {
                 PutBackground(&scWOffset_0, a2);
@@ -122,7 +123,6 @@ int ModeAction(HWND a1)
                 if (!Flip_SystemTask())
                     break;
             }
-            
         }
         v7 = 0;
     }
@@ -131,7 +131,7 @@ int ModeAction(HWND a1)
         v7 = 0;
     }
 LABEL_27:
-    
+
     if (!GetInReplay())
     {
         EndPlayRecord();
@@ -145,7 +145,51 @@ LABEL_27:
 }
 
 //----- (0041B730) --------------------------------------------------------
-int PauseLoop(HWND a1, TriggerStruct *a2)
+int PauseLoop(HWND hWnd, TriggerStruct *trig)
 {
-    return 2;
+    TriggerStruct v3;  // [esp+0h] [ebp-30h]
+    TriggerStruct a1a; // [esp+Ch] [ebp-24h] BYREF
+    int v5;            // [esp+18h] [ebp-18h]
+    unsigned int v6;   // [esp+1Ch] [ebp-14h]
+    RECT rect;         // [esp+20h] [ebp-10h] BYREF
+
+    v6 = 0;
+    if ((trig->prev & 2) == 0)
+        return 2;
+    v3 = *trig;
+    rect.left = 64;
+    rect.top = 48;
+    rect.right = 104;
+    rect.bottom = 56;
+    SetReset(0);
+    ClearTrg_(&a1a);
+    PutBitmapPause_(23);
+    PlaySound(44);
+    while (1)
+    {
+        ++v6;
+        if (Call_Escape())
+        {
+            v5 = 0;
+            goto LABEL_14;
+        }
+        if (GetGameReset())
+        {
+            v5 = 1;
+            goto LABEL_14;
+        }
+        a1a.hold = GetTrg();
+        UpdateTrg(&a1a);
+        if (v6 > 20 && (a1a.prev & 2) != 0)
+            break;
+        PutRect(0, 0, &scWOffset_0, 23);
+        PutRect(2, 2, &rect, 11);
+        if (!Flip_SystemTask())
+            return 0;
+    }
+    v5 = 2;
+    PlaySound(45);
+LABEL_14:
+    *trig = v3;
+    return v5;
 }

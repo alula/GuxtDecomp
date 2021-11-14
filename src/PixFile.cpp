@@ -225,9 +225,9 @@ BOOL VariableLengthWrite(int val, FILE *fp, int *tgt_pos)
 // Variable length reading (guaranteed up to int32_t)
 BOOL VariableLengthRead(int *p, PixFile *a2)
 {
-    unsigned __int8 b[4]; // [esp+4h] [ebp-18h]
+    unsigned char b[4]; // [esp+4h] [ebp-18h]
     int i;                // [esp+Ch] [ebp-10h]
-    unsigned __int8 a[5]; // [esp+10h] [ebp-Ch] BYREF
+    unsigned char a[5]; // [esp+10h] [ebp-Ch] BYREF
 
     b[3] = 0;
     b[2] = 0;

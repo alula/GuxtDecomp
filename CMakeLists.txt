@@ -22,6 +22,7 @@ add_executable(pxGame
     src/Menu.cpp
     src/Mutex.cpp
     src/NpcAct000.cpp
+    src/NpcAct020.cpp
     src/Object.cpp
     src/PixFile.cpp
     src/PlayRecord.cpp

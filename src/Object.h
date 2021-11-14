@@ -26,9 +26,9 @@ struct Object
     int flag;
     int shock;
     int score;
-    // this field stores pointers sometimes
+    // those fields store pointers sometimes
     intptr_t type2;
-    int child;
+    intptr_t child;
     int rot1;
     int count4;
     int num;
@@ -64,7 +64,7 @@ void MapCollideEntityProc(Object *a1, int a2, int a3, int a4);
 void PutNpChar2(RECT *rcView);
 void PutNpChar(RECT *rcView);
 
-void CreateEntity(int type, int x, int y, intptr_t type2);
+Object* CreateEntity(int type, int x, int y, intptr_t type2);
 void DamageNpChar(Object *o, int dmg);
 int CountNpCharType(int type);
 void ClearReplaceNpChar(int a1, int a2);
@@ -75,6 +75,12 @@ void HitMapGeneric(Object *o, void (*func)(Object *, int, int, int), int a3);
 
 extern Object EntityTbl[256];
 extern int EntityCreateCount;
-extern char KagomeCount;
+extern unsigned char KagomeCount;
+extern unsigned char byte_44C265;
+extern int dword_44C268;
+extern unsigned char byte_44C26C;
+extern int bonusAzaX;
+extern int asteroidsKilled;
+extern int bonusAzaY;
 
 #endif

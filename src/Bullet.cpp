@@ -61,18 +61,18 @@ void ActBullet1(Bullet *a1)
     switch (a1->type2)
     {
     case 0:
-        a1->ym = -0x1800u;
+        a1->ym = -0x1800;
         break;
     case 1:
-        a1->ym = -0x1400u;
+        a1->ym = -0x1400;
         a1->xm = 0xC00;
         break;
     case 2:
-        a1->ym = -0x1000u;
+        a1->ym = -0x1000;
         a1->xm = 0x1000;
         break;
     case 3:
-        a1->ym = -0xC00u;
+        a1->ym = -0xC00;
         a1->xm = 0x1400;
         break;
     case 6:
@@ -83,20 +83,20 @@ void ActBullet1(Bullet *a1)
         a1->ym = 0x1800;
         break;
     case 0xA:
-        a1->xm = -0x1000u;
+        a1->xm = -0x1000;
         a1->ym = 0x1000;
         break;
     case 0xD:
-        a1->ym = -0xC00u;
-        a1->xm = -0x1400u;
+        a1->ym = -0xC00;
+        a1->xm = -0x1400;
         break;
     case 0xE:
-        a1->ym = -0x1000u;
-        a1->xm = -0x1000u;
+        a1->ym = -0x1000;
+        a1->xm = -0x1000;
         break;
     case 0xF:
-        a1->ym = -0x1400u;
-        a1->xm = -0xC00u;
+        a1->ym = -0x1400;
+        a1->xm = -0xC00;
         break;
     default:
         break;
@@ -268,7 +268,7 @@ void ActBullet4(Bullet *a1)
 void ActBullet5(Bullet *a1)
 {
     int v1;             // [esp+0h] [ebp-8h]
-    unsigned __int8 v2; // [esp+7h] [ebp-1h]
+    unsigned char v2; // [esp+7h] [ebp-1h]
 
     v1 = a1->state;
     if (v1)
@@ -414,7 +414,7 @@ void ActBullet()
             bulletFuncTbl[bul->type](bul);
             if ((bul->cond & 2) != 0)
                 bul->cond &= ~1u;
-            if ((bul->cond & 4) == 0 && (bul->x < -0x2000u || bul->x > 0x20000 || bul->y < -0x2000u || bul->y > 0x2A000))
+            if ((bul->cond & 4) == 0 && (bul->x < -0x2000 || bul->x > 0x20000 || bul->y < -0x2000 || bul->y > 0x2A000))
                 bul->cond &= ~1u;
         }
     }

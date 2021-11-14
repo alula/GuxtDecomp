@@ -39,33 +39,40 @@ int GetMapHeight()
 BOOL LoadMap(int id)
 {
     CHAR Name[268]; // [esp+0h] [ebp-128h] BYREF
-    BOOL v3;        // [esp+110h] [ebp-18h]
+    BOOL result;    // [esp+110h] [ebp-18h]
     PixFile a2;     // [esp+114h] [ebp-14h] BYREF
 
-    v3 = 0;
+    result = FALSE;
     sprintf(Name, "%s\\map%d.pxmap", dataPath, id);
     ReleaseStageAttr(&mapStage);
-    if (OpenResource_(0, Name, 0, &a2))
-    {
-        if (LoadStageAttr(&mapStage, &a2))
-        {
-            CloseResource_(&a2);
-            sprintf(Name, "%s\\parts%d.pxatrb", dataPath, id);
-            ReleaseStageAttr(&attrStage);
-            if (OpenResource_(0, Name, 0, &a2))
-            {
-                if (LoadStageAttr(&attrStage, &a2))
-                {
-                    CloseResource_(&a2);
-                    sprintf(Name, "parts%d", id);
-                    ClearSurface(4);
-                    if (LoadPximg(Name, 4))
-                        v3 = 1;
-                }
-            }
-        }
-    }
-    if (!v3)
+
+    if (!OpenResource_(0, Name, 0, &a2))
+        goto err;
+
+    if (!LoadStageAttr(&mapStage, &a2))
+        goto err;
+
+    CloseResource_(&a2);
+    sprintf(Name, "%s\\parts%d.pxatrb", dataPath, id);
+    ReleaseStageAttr(&attrStage);
+
+    if (!OpenResource_(NULL, Name, 0, &a2))
+        goto err;
+
+    if (!LoadStageAttr(&attrStage, &a2))
+        goto err;
+
+    CloseResource_(&a2);
+    sprintf(Name, "parts%d", id);
+    ClearSurface(4);
+
+    if (!LoadPximg(Name, 4))
+        goto err;
+    
+    result = TRUE;
+
+err:
+    if (!result)
     {
         ReleaseStageAttr(&mapStage);
         ReleaseStageAttr(&attrStage);
@@ -73,7 +80,7 @@ BOOL LoadMap(int id)
 
     CloseResource_(&a2);
 
-    return v3;
+    return result;
 }
 
 //----- (0041E690) --------------------------------------------------------
@@ -152,6 +159,7 @@ void PutMapParts2(RECT *rcView)
                 rect.right = rect.left + 16;
                 rect.top = 16 * (tile / 16);
                 rect.bottom = rect.top + 16;
+
                 PutBitmap3(rcView, 16 * j - xoff, 16 * i - scroll, &rect, 4);
             }
         }
@@ -221,11 +229,13 @@ void PutStageText(const char *text)
     if (text)
     {
         PutTextObject(&unusedTextRender_, 60, 4, text, 16, 10);
+
         if (centerTextBuffer)
         {
             free(centerTextBuffer);
             centerTextBuffer = 0;
         }
+        
         size_t v1 = strlen(text) + 1;
         centerTextBuffer = (char *)malloc(v1);
         memcpy(centerTextBuffer, text, v1);
@@ -272,32 +282,35 @@ void ReleaseStageAttr(TileMap *a1)
 }
 
 //----- (00426A50) --------------------------------------------------------
-int LoadStageAttr(TileMap *a1, PixFile *a2)
+BOOL LoadStageAttr(TileMap *a1, PixFile *a2)
 {
-    int v3;    // [esp+0h] [ebp-Ch] BYREF
-    size_t v4; // [esp+4h] [ebp-8h]
-    int v5;    // [esp+8h] [ebp-4h]
+    int v3;      // [esp+0h] [ebp-Ch] BYREF
+    size_t size; // [esp+4h] [ebp-8h]
+    BOOL result; // [esp+8h] [ebp-4h]
 
-    v5 = 0;
+    result = FALSE;
     ReleaseStageAttr(a1);
-    if (ReadFromFile(&v3, 2u, 1, a2))
-    {
-        a1->width = v3;
-        if (ReadFromFile(&v3, 2u, 1, a2))
-        {
-            a1->height = v3;
-            v4 = a1->height * a1->width;
-            a1->data = (unsigned char *)malloc(v4);
-            if (a1->data)
-            {
-                if (ReadFromFile(a1->data, 1u, v4, a2))
-                    v5 = 1;
-            }
-        }
-    }
+    if (!ReadFromFile(&v3, 2u, 1, a2))
+        goto err;
 
-    if (!v5)
+    a1->width = (unsigned short)v3;
+    if (!ReadFromFile(&v3, 2u, 1, a2))
+        goto err;
+
+    a1->height = (unsigned short)v3;
+    size = a1->height * a1->width;
+    a1->data = (unsigned char *)malloc(size);
+    if (!a1->data)
+        goto err;
+
+    if (!ReadFromFile(a1->data, 1u, size, a2))
+        goto err;
+
+    result = TRUE;
+
+err:
+    if (!result)
         ReleaseStageAttr(a1);
 
-    return v5;
+    return result;
 }

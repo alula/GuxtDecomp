@@ -165,15 +165,15 @@ void PutFade(RECT *rcView)
     }
     switch (g_Fade.state)
     {
-    case 0xA:
+    case 10:
         CortBox(rcView, &g_Fade.bounds, Fade_color);
         PutBitmap3(rcView, 0, g_Fade.bounds.bottom, &rect, 12);
         break;
-    case 0x14:
+    case 20:
         CortBox(rcView, &g_Fade.bounds, Fade_color);
         PutBitmap3(rcView, 0, g_Fade.bounds.top - 8, &v2, 12);
         break;
-    case 0x1E:
+    case 30:
         CortBox(rcView, &g_Fade.bounds, Fade_color);
         break;
     }

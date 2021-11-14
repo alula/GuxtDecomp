@@ -159,7 +159,7 @@ BOOL GameStart()
     g_StageState.shipLivesCount = (g_StageState.gameFlags & 2) == 0;
     FreeStageText();
     ResetShip();
-    return 1;
+    return TRUE;
 }
 
 static int GameDelay;

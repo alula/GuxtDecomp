@@ -84,15 +84,17 @@ void ActNpc001_Explode(Object *a1)
 }
 
 //----- (00403B90) --------------------------------------------------------
-void ActNpc002_CloudL(Object *a1)
+void ActNpc002_CloudL(Object *o)
 {
-    a1->y += 0x800;
-    if (a1->y > 0x2C000)
-        a1->cond = 0;
-    a1->rect.left = 0;
-    a1->rect.top = 0;
-    a1->rect.right = 48;
-    a1->rect.bottom = 24;
+    o->y += 0x800;
+    
+    if (o->y > 0x2C000)
+        o->cond = 0;
+
+    o->rect.left = 0;
+    o->rect.top = 0;
+    o->rect.right = 48;
+    o->rect.bottom = 24;
 }
 
 //----- (00403C00) --------------------------------------------------------
@@ -285,20 +287,19 @@ void ActNpc005_Hanger(Object *o)
 }
 
 //----- (00404200) --------------------------------------------------------
-void ActNpc006_CloudGen(Object *a1)
+void ActNpc006_CloudGen(Object *o)
 {
-    int x; // [esp+4h] [ebp-4h]
-
-    if (++a1->count1 > 15)
+    if (++o->count1 > 15)
     {
-        a1->count1 = 0;
-        if (++a1->state > 9)
-            a1->state = 0;
+        o->count1 = 0;
+        if (++o->state > 9)
+            o->state = 0;
     }
-    if (!a1->count1)
+
+    if (o->count1 == 0)
     {
-        x = GetRandom(120) << 10;
-        switch (a1->state)
+        int x = GetRandom(120) << 10;
+        switch (o->state)
         {
         case 0:
         case 1:
@@ -647,7 +648,7 @@ void ActNpc013_Bullet(Object *a1)
     }
     if (a1->count2 > 3)
         a1->count2 = 0;
-    if (a1->x < (signed int)-0x10000u || a1->x > 0x2E000 || a1->y < (signed int)-0x10000u || a1->y > 0x38000)
+    if (a1->x < (signed int)-0x10000 || a1->x > 0x2E000 || a1->y < (signed int)-0x10000 || a1->y > 0x38000)
         a1->cond = 0;
 
     a1->rect = v2[a1->count2];
@@ -738,7 +739,7 @@ void ActNpc015_Boss1(Object *o)
     int v6;              // [esp-8h] [ebp-24h]
     int v7;              // [esp-8h] [ebp-24h]
     int i;               // [esp+4h] [ebp-18h]
-    unsigned __int8 v9;  // [esp+1Bh] [ebp-1h]
+    unsigned char v9;  // [esp+1Bh] [ebp-1h]
 
     if (o->state < 100 && o->life < 872)
     {
@@ -751,7 +752,7 @@ void ActNpc015_Boss1(Object *o)
     case 0:
         o->state = 10;
         o->y = 0x30000;
-        o->ym = -0x100u;
+        o->ym = -0x100;
         o->xm = 0;
         CreateEntity(16, o->x - 0x5C00, o->y + 0x800, (int)o);
         CreateEntity(16, o->x + 0x5C00, o->y + 0x800, (int)o);
@@ -818,7 +819,7 @@ void ActNpc015_Boss1(Object *o)
         if (v3 < 60)
             goto LABEL_42;
         if (o->x >= 0xF000)
-            o->xm = -0x100u;
+            o->xm = -0x100;
         else
             o->xm = 0x100;
         o->ym = 341;
@@ -937,7 +938,7 @@ void ActNpc016_Boss1Eye(Object *a1)
 {
     RECT v2[3];            // [esp+4h] [ebp-38h]
     Object *v3;            // [esp+34h] [ebp-8h]
-    unsigned __int8 angle; // [esp+3Bh] [ebp-1h]
+    unsigned char angle; // [esp+3Bh] [ebp-1h]
 
     v2[0].left = 0;
     v2[0].top = 64;
@@ -957,7 +958,6 @@ void ActNpc016_Boss1Eye(Object *a1)
     case 0:
         a1->child = a1->x - v3->x;
         a1->rot1 = a1->y - v3->y;
-        static unsigned char byte_44C265 = 0;
         a1->count4 = byte_44C265;
         byte_44C265 = (byte_44C265 + 1) % 4;
         a1->state = 10;

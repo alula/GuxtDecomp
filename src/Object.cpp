@@ -8,6 +8,7 @@
 #include "GameAttr.h"
 #include "Map.h"
 #include "NpcAct000.h"
+#include "NpcAct020.h"
 #include "Ship.h"
 #include "Stage.h"
 #include "Sound.h"
@@ -97,14 +98,14 @@ void (*npcFuncTbl[])(Object *a1) =
         ActNpc017_Boss1BigEye,
         ActNpc018_BulletLong,
         ActNpc019_BGM,
-        // ActNpc020_Asteroid_L,
-        // ActNpc021_Asteroid_S,
-        // ActNpc022_ScrollSpdSet,
-        // ActNpc023_Asteroid_SGravity,
-        // ActNpc024_Hanger_Wave,
-        // ActNpc025_Hanger_Shoot,
-        // ActNpc026_RockHugger,
-        // ActNpc027_RHAsteroidL,
+        ActNpc020_Asteroid_L,
+        ActNpc021_Asteroid_S,
+        ActNpc022_ScrollSpdSet,
+        ActNpc023_Asteroid_SGravity,
+        ActNpc024_Hanger_Wave,
+        ActNpc025_Hanger_Shoot,
+        ActNpc026_RockHugger,
+        ActNpc027_RHAsteroidL,
         // ActNpc028_RHAsteroidS,
         // ActNpc029_Bullet2_,
         // ActNpc030_Elka,
@@ -207,9 +208,10 @@ void ActNpc()
     int i;      // [esp+0h] [ebp-8h]
     Object *v1; // [esp+4h] [ebp-4h]
 
-    v1 = EntityTbl;
     for (i = 0; i < 256; ++i)
     {
+        v1 = &EntityTbl[i];
+
         if ((v1->cond & 2) != 0)
         {
             v1->cond = 0;
@@ -219,10 +221,12 @@ void ActNpc()
             if (v1->shock)
                 --v1->shock;
 
-            if (v1->type >= 20) continue; // TODO: remove once we have all npcs done
+            if (v1->type >= 28)
+            {
+                continue; // TODO: remove once we have all npcs done
+            }
             npcFuncTbl[v1->type](v1);
         }
-        ++v1;
     }
 }
 
@@ -264,6 +268,7 @@ void PutNpChar2(RECT *rcView)
 
     x = GetStageXOffset() / 0x400;
     scroll = GetStageScroll() / 0x400;
+
     for (i = 50; i < 256; ++i)
         PutObject(rcView, &EntityTbl[i], x, scroll);
 }
@@ -271,19 +276,27 @@ void PutNpChar2(RECT *rcView)
 //----- (004033D0) --------------------------------------------------------
 void PutNpChar(RECT *rcView)
 {
-    int i;  // [esp+0h] [ebp-Ch]
-    int a4; // [esp+4h] [ebp-8h]
-    int a3; // [esp+8h] [ebp-4h]
+    int i;      // [esp+0h] [ebp-Ch]
+    int scroll; // [esp+4h] [ebp-8h]
+    int x;      // [esp+8h] [ebp-4h]
 
-    a3 = GetStageXOffset() / 0x400;
-    a4 = GetStageScroll() / 0x400;
+    x = GetStageXOffset() / 0x400;
+    scroll = GetStageScroll() / 0x400;
+
     for (i = 0; i < 50; ++i)
-        PutObject(rcView, &EntityTbl[i], a3, a4);
+        PutObject(rcView, &EntityTbl[i], x, scroll);
 }
 
 Object EntityTbl[256];
 int EntityCreateCount;
-char KagomeCount;
+unsigned char KagomeCount;
+unsigned char byte_44C265;
+int dword_44C268;
+unsigned char byte_44C26C;
+int bonusAzaX;
+int asteroidsKilled;
+int bonusAzaY;
+
 static NpcAttr NpcAttrTbl[122] =
     {
         {16u, 3u, 1u, 1u, 8u, 8u, 7u, 7u, 6, 5u, 0u},
@@ -410,38 +423,43 @@ static NpcAttr NpcAttrTbl[122] =
         {16u, 3u, 5u, 1u, 8u, 8u, 6u, 6u, 1000, 14u, 3u}};
 
 //----- (00403440) --------------------------------------------------------
-void CreateEntity(int type, int x, int y, intptr_t type2)
+Object *CreateEntity(int type, int x, int y, int type2)
 {
     int i;          // [esp+8h] [ebp-Ch]
     NpcAttr *eAttr; // [esp+Ch] [ebp-8h]
     Object *ePtr;   // [esp+10h] [ebp-4h]
 
     eAttr = &NpcAttrTbl[type];
-    for (i = (eAttr->unk << 8) / 10; i < 256 && (EntityTbl[i].cond & 1) != 0; ++i)
+    for (i = ((int)eAttr->unk << 8) / 10; i < 256 && (EntityTbl[i].cond & 1) != 0; ++i)
         ;
-    if (i != 256)
-    {
-        ePtr = &EntityTbl[i];
-        memset(ePtr, 0, sizeof(Object));
-        ePtr->cond = 1;
-        ePtr->flag = eAttr->flag;
-        ePtr->xoff = eAttr->xoff << 10;
-        ePtr->yoff = eAttr->yoff << 10;
-        ePtr->w = eAttr->w << 10;
-        ePtr->h = eAttr->h << 10;
-        ePtr->life = eAttr->life;
-        ePtr->score = eAttr->score;
-        ePtr->damage = eAttr->damage;
-        ePtr->surf = eAttr->surf;
-        ePtr->destroyHitVoice = eAttr->destroyHitVoice;
-        ePtr->type = type;
-        ePtr->type2 = type2;
-        if ((ePtr->flag & 0x10) != 0)
-            AddStageXOScroll(&x, &y);
-        ePtr->x = x;
-        ePtr->y = y;
-        ePtr->num = EntityCreateCount++;
-    }
+    
+    if (i == 256)
+        return NULL;
+
+    ePtr = &EntityTbl[i];
+    memset(ePtr, 0, sizeof(Object));
+    ePtr->cond = 1;
+    ePtr->flag = (int)eAttr->flag;
+    ePtr->xoff = (int)eAttr->xoff << 10;
+    ePtr->yoff = (int)eAttr->yoff << 10;
+    ePtr->w = (int)eAttr->w << 10;
+    ePtr->h = (int)eAttr->h << 10;
+    ePtr->life = eAttr->life;
+    ePtr->score = eAttr->score;
+    ePtr->damage = eAttr->damage;
+    ePtr->surf = eAttr->surf;
+    ePtr->destroyHitVoice = eAttr->destroyHitVoice;
+    ePtr->type = type;
+    ePtr->type2 = type2;
+
+    if ((ePtr->flag & 0x10) != 0)
+        AddStageXOScroll(&x, &y);
+
+    ePtr->x = x;
+    ePtr->y = y;
+    ePtr->num = EntityCreateCount++;
+
+    return &EntityTbl[i];
 }
 
 //----- (004035F0) --------------------------------------------------------
@@ -559,6 +577,7 @@ void ClearReplaceNpChar(int a1, int a2)
                 v4 = EntityTbl[i].y;
                 if ((EntityTbl[i].flag & 0x10) != 0)
                     SubStageXOScroll(&v3, &v4);
+
                 CreateEntity(1, v3, v4, 0);
             }
         }

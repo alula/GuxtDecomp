@@ -32,6 +32,6 @@ void PutCenterText();
 BOOL ClearTileMap(TileMap *map);
 void FreeStageAttr(void **a1);
 void ReleaseStageAttr(TileMap *a1);
-int LoadStageAttr(TileMap *a1, PixFile *a2);
+BOOL LoadStageAttr(TileMap *a1, PixFile *a2);
 
 #endif

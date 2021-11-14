@@ -447,6 +447,7 @@ void ShootBullet2()
             x = ship.x - 1024;
         else
             x = ship.x + 1024;
+
         if (CreateBullet(1, x, ship.y, 0, 0, 6))
             PlaySound(2);
     }
@@ -596,7 +597,7 @@ void ShootBullet11()
         }
         v3 = ship.y + 5120;
         v4 = CreateBullet(1, x, ship.y + 4096, 0, 0, 6);
-        if (v4 + CreateBullet(1, v2, v3 - 1024, 0, 1, 6))
+        if (v4 && CreateBullet(1, v2, v3 - 1024, 0, 1, 6))
             PlaySound(2);
     }
 }
@@ -605,6 +606,7 @@ void ShootBullet11()
 void KillShip()
 {
     PlaySound(25);
+    
     ship.count1 = 1;
     ship.state = 1000;
     ship.x = 0xF000;
