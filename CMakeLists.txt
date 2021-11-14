@@ -11,6 +11,7 @@ add_executable(pxGame
     src/Bullet.cpp
     src/Caret.cpp
     src/Draw.cpp
+    src/Ending.cpp
     src/Event.cpp
     src/Fade.cpp
     src/Game.cpp
@@ -23,11 +24,15 @@ add_executable(pxGame
     src/Mutex.cpp
     src/NpcAct000.cpp
     src/NpcAct020.cpp
+    src/NpcAct040.cpp
+    src/NpcAct060.cpp
+    src/NpcAct080.cpp
+    src/NpcAct100.cpp
+    src/NpcShip.cpp
     src/Object.cpp
     src/PixFile.cpp
     src/PlayRecord.cpp
     src/Random.cpp
-    src/Ship.cpp
     src/Sound.cpp
     src/Stage.cpp
     src/Text.cpp

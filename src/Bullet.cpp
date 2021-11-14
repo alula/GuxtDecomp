@@ -6,7 +6,7 @@
 #include "GameAttr.h"
 #include "Object.h"
 #include "TrigFuncs.h"
-#include "Ship.h"
+#include "NpcShip.h"
 #include "Stage.h"
 #include "Sound.h"
 

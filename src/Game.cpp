@@ -15,7 +15,7 @@
 #include "Menu.h"
 #include "Object.h"
 #include "PlayRecord.h"
-#include "Ship.h"
+#include "NpcShip.h"
 #include "Sound.h"
 #include "Stage.h"
 #include "Text.h"
@@ -200,8 +200,7 @@ int Game(HWND hWnd)
                 v4 = KeyConfigLoop(hWnd, 1);
                 break;
             case 7:
-                // v4 = ModeEnding();
-                v4 = 1;
+                v4 = ModeEnding();
                 break;
             default:
                 goto LABEL_3;

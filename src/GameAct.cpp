@@ -4,6 +4,7 @@
 #include "Bullet.h"
 #include "Caret.h"
 #include "Draw.h"
+#include "Ending.h"
 #include "Event.h"
 #include "Fade.h"
 #include "Game.h"
@@ -12,12 +13,174 @@
 #include "Map.h"
 #include "Object.h"
 #include "PlayRecord.h"
-#include "Ship.h"
+#include "NpcShip.h"
+#include "Random.h"
 #include "Sound.h"
 #include "Stage.h"
 #include "WinMain.h"
 
 int PauseLoop(HWND a1, TriggerStruct *a2);
+void EndingPrint(FILE *a1, int a2, const char *a3);
+
+static RECT rcEnding[3] = {
+    {0, 0, 120, 8},
+    {0, 8, 120, 16},
+    {0, 16, 120, 24},
+};
+
+//----- (0041AED0) --------------------------------------------------------
+int ModeEnding()
+{
+    TriggerStruct a1; // [esp+0h] [ebp-2Ch] BYREF
+    int result;       // [esp+Ch] [ebp-20h]
+    RECT rect;        // [esp+10h] [ebp-1Ch] BYREF
+    int a2;           // [esp+20h] [ebp-Ch]
+    FILE *fp;         // [esp+24h] [ebp-8h]
+    int v6;           // [esp+28h] [ebp-4h]
+
+    v6 = 0;
+    rect.left = 72;
+    rect.top = 80;
+    rect.right = 104;
+    rect.bottom = 88;
+    a2 = GetSurfaceColor(17);
+    SetSoundDisabled(1);
+    SetReset(0);
+    ClearTrg_(&a1);
+    LoadPximg("ending", 24);
+    InitEnding();
+    if (LoadMap(6))
+    {
+        if (LoadPxeve(6))
+        {
+            LoadPximgEnemy(2);
+            LoadPximgEnemy(3);
+            LoadPximgEnemy(4);
+            LoadPximgEnemy(5);
+            LoadPximgEnemy(1);
+            ZeroEntityCount();
+            ResetBullet();
+            ResetCaret();
+            ResetEntities();
+            ResetRandom();
+            SetInitialShipValues();
+            EndingInitFade();
+            SetGameDelay(0);
+            StopLoopSound(32);
+            SetDefaultStageScroll();
+            SetScrollSpeed(0);
+            SetStageXOffset(0x1000);
+            SetShipEnding();
+            fp = 0;
+            while (1)
+            {
+                EndingPrint(fp, ++v6, "01");
+                if (Call_Escape())
+                {
+                    result = 0;
+                    goto LABEL_22;
+                }
+                EndingPrint(fp, v6, "02");
+                if (GetGameReset())
+                {
+                    result = 1;
+                    goto LABEL_22;
+                }
+                EndingPrint(fp, v6, "03");
+                a1.hold = GetTrg();
+                EndingPrint(fp, v6, "04");
+                UpdateTrg(&a1);
+                EndingPrint(fp, v6, "05");
+                if (CheckEndingTextCount())
+                {
+                    if ((a1.prev & 1) != 0)
+                        break;
+                }
+                EndingPrint(fp, v6, "06");
+                if (!GetGameDelayed())
+                {
+                    EndingPrint(fp, v6, "06.1");
+                    SetStageEntities();
+                    EndingPrint(fp, v6, "06.2");
+                    ActStageScroll();
+                    EndingPrint(fp, v6, "06.3");
+                    ActNpc();
+                    EndingPrint(fp, v6, "06.4");
+                    ActShipState(0);
+                    EndingPrint(fp, v6, "06.5");
+                    ActBullet();
+                    EndingPrint(fp, v6, "06.6");
+                    ActCaret();
+                    EndingPrint(fp, v6, "06.7");
+                    ActFade();
+                    EndingPrint(fp, v6, "06.8");
+                }
+                EndingTextRunTimer();
+                EndingPrint(fp, v6, "06.9");
+                EndingPrint(fp, v6, "07");
+                PutBackground(&scWOffset_0, a2);
+                EndingPrint(fp, v6, "07.1");
+                PutNpChar(&scWOffset_0);
+                EndingPrint(fp, v6, "07.2");
+                PutMapParts(&scWOffset_0);
+                EndingPrint(fp, v6, "07.3");
+                PutNpChar2(&scWOffset_0);
+                EndingPrint(fp, v6, "07.4");
+                PutPlayerExtra(&scWOffset_0);
+                EndingPrint(fp, v6, "07.5");
+                PutBullet(&scWOffset_0);
+                EndingPrint(fp, v6, "07.6");
+                PutMapParts2(&scWOffset_0);
+                EndingPrint(fp, v6, "07.7");
+                PutCaret(&scWOffset_0);
+                EndingPrint(fp, v6, "07.8");
+                PutFade(&scWOffset_0);
+                EndingPrint(fp, v6, "07.9");
+                PutEndingText();
+                EndingPrint(fp, v6, "08");
+                if (v6 < 300)
+                {
+                    EndingPrint(fp, v6, "08.1");
+                    PutRect(0, 32, &rcEnding[v6 / 4 % 3], 24);
+                    EndingPrint(fp, v6, "08.2");
+                    PutRect(24, 48, &rect, 11);
+                    EndingPrint(fp, v6, "08.3");
+                    PutScore(&scWOffset_0, 52, 48);
+                }
+                EndingPrint(fp, v6, "09");
+                PutFramePerSecond();
+                EndingPrint(fp, v6, "10");
+                if (!Flip_SystemTask())
+                {
+                    result = 0;
+                    goto LABEL_22;
+                }
+            }
+            if (GetInScoreAttack())
+                result = 3;
+            else
+                result = 1;
+        }
+        else
+        {
+            result = 0;
+        }
+    }
+    else
+    {
+        result = 0;
+    }
+LABEL_22:
+    if (fp)
+        fclose(fp);
+    return result;
+}
+
+//----- (0041B460) --------------------------------------------------------
+void EndingPrint(FILE *a1, int a2, const char *a3)
+{
+    ;
+}
 
 //----- (0041B470) --------------------------------------------------------
 int ModeAction(HWND a1)

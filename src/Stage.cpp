@@ -14,7 +14,7 @@
 #include "Object.h"
 #include "PlayRecord.h"
 #include "Random.h"
-#include "Ship.h"
+#include "NpcShip.h"
 #include "Sound.h"
 #include "Text.h"
 #include "WinMain.h"

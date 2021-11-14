@@ -1,6 +1,6 @@
 #include <windows.h>
 
-#include "Ship.h"
+#include "NpcShip.h"
 #include "Bullet.h"
 #include "Caret.h"
 #include "Draw.h"
@@ -65,8 +65,8 @@ void ResetShip()
 //----- (00416110) --------------------------------------------------------
 void SetInitialShipValues()
 {
-    ship.x = 61440;
-    ship.y = 184320;
+    ship.x = 0xF000;
+    ship.y = 0x2D000;
     ship.state = 0;
     ship.count1 = 0;
     ship.shock = 100;
@@ -200,6 +200,7 @@ void LoadPximgPlayerInit()
 {
     LoadPximg("player", 0);
     LoadPximg("shield", 1);
+
     ShipSpeedTable[0] = 0x400;
     ShipSpeedTableDiag[0] = 0x300;
     ShipSpeedTable[1] = 0x600;
@@ -210,6 +211,7 @@ void LoadPximgPlayerInit()
     ShipSpeedTableDiag[3] = 0x780;
     ShipSpeedTable[4] = 0xC00;
     ShipSpeedTableDiag[4] = 0x900;
+    
     ResetShip();
 }
 
@@ -217,12 +219,16 @@ void LoadPximgPlayerInit()
 void ActShipState(TriggerStruct *trig)
 {
     ship.cond &= 0xFFFFFF0F;
+    
     ++ShipThrusterFrame;
     ++ShipIFrameFlash;
+
     if (ship.shock)
         --ship.shock;
+    
     if (ship.rot1)
         --ship.rot1;
+    
     if ((ship.cond & 2) != 0)
     {
         ship.cond = 0;
@@ -606,7 +612,7 @@ void ShootBullet11()
 void KillShip()
 {
     PlaySound(25);
-    
+
     ship.count1 = 1;
     ship.state = 1000;
     ship.x = 0xF000;
@@ -704,11 +710,20 @@ static RECT rcThruster[10] =
 //----- (00417610) --------------------------------------------------------
 void PutPlayerExtra(RECT *rcView)
 {
-    RECT v1;                // [esp+0h] [ebp-A8h] BYREF
-    RECT rcShipThruster[8]; // [esp+10h] [ebp-98h]
-    RECT rect;              // [esp+90h] [ebp-18h] BYREF
-    int a4;                 // [esp+A0h] [ebp-8h]
-    int a3;                 // [esp+A4h] [ebp-4h]
+    RECT v1; // [esp+0h] [ebp-A8h] BYREF
+    RECT rcShipThruster[8] = {
+        {0, 0, 24, 24},
+        {24, 0, 48, 24},
+        {48, 0, 72, 24},
+        {72, 0, 96, 24},
+        {96, 0, 120, 24},
+        {120, 0, 144, 24},
+        {144, 0, 168, 24},
+        {168, 0, 192, 24},
+    };
+    RECT rect; // [esp+90h] [ebp-18h] BYREF
+    int a4;    // [esp+A0h] [ebp-8h]
+    int a3;    // [esp+A4h] [ebp-4h]
 
     ship.rect = shipRectTbl[ShipPowerup];
     if (ship.shock && ShipIFrameFlash / 2 % 2)
@@ -716,8 +731,10 @@ void PutPlayerExtra(RECT *rcView)
         ship.rect.left += 24;
         ship.rect.right += 24;
     }
+
     a3 = GetStageXOffset() / 1024;
     a4 = GetStageScroll() / 1024;
+
     PutObject(rcView, &ship, a3, a4);
     PutBitmap3(
         rcView,
@@ -725,40 +742,9 @@ void PutPlayerExtra(RECT *rcView)
         (ship.y + 4096) / 1024,
         &rcThruster[2 * ShipSpeed + ShipThrusterFrame / 2 % 2],
         7);
+
     if (ship.life > 1)
     {
-        rcShipThruster[0].left = 0;
-        rcShipThruster[0].top = 0;
-        rcShipThruster[0].right = 24;
-        rcShipThruster[0].bottom = 24;
-        rcShipThruster[1].left = 24;
-        rcShipThruster[1].top = 0;
-        rcShipThruster[1].right = 48;
-        rcShipThruster[1].bottom = 24;
-        rcShipThruster[2].left = 48;
-        rcShipThruster[2].top = 0;
-        rcShipThruster[2].right = 72;
-        rcShipThruster[2].bottom = 24;
-        rcShipThruster[3].left = 72;
-        rcShipThruster[3].top = 0;
-        rcShipThruster[3].right = 96;
-        rcShipThruster[3].bottom = 24;
-        rcShipThruster[4].left = 96;
-        rcShipThruster[4].top = 0;
-        rcShipThruster[4].right = 120;
-        rcShipThruster[4].bottom = 24;
-        rcShipThruster[5].left = 120;
-        rcShipThruster[5].top = 0;
-        rcShipThruster[5].right = 144;
-        rcShipThruster[5].bottom = 24;
-        rcShipThruster[6].left = 144;
-        rcShipThruster[6].top = 0;
-        rcShipThruster[6].right = 168;
-        rcShipThruster[6].bottom = 24;
-        rcShipThruster[7].left = 168;
-        rcShipThruster[7].top = 0;
-        rcShipThruster[7].right = 192;
-        rcShipThruster[7].bottom = 24;
         rect = rcShipThruster[ShipThrusterFrame / 2 % 8];
         if (ship.life == 3)
         {
@@ -767,6 +753,7 @@ void PutPlayerExtra(RECT *rcView)
         }
         PutBitmap3(rcView, (ship.x - 0x3000) / 0x400, (ship.y - 0x3000) / 0x400, &rect, 1);
     }
+
     if (ship.state == 100 && ShipPowerup == 9)
     {
         if (fireHeldFrames % 2u)
@@ -775,6 +762,7 @@ void PutPlayerExtra(RECT *rcView)
             v1.top = 0;
             v1.right = 88;
             v1.bottom = 16;
+
             PutBitmap3(rcView, (ship.xm - 0x2000) / 0x400, (ship.ym - 0x2000) / 0x400, &v1, 2);
         }
     }
@@ -783,8 +771,10 @@ void PutPlayerExtra(RECT *rcView)
 //----- (00417960) --------------------------------------------------------
 void PutPlayer(RECT *rcView)
 {
-    if ((ship.flag & 0x100) != 0)
-        PutBitmap3(rcView, (ship.x - 0x2000) / 1024, (ship.y - 4096) / 1024, &rcShip[ShipPowerup], 0);
+    if ((ship.flag & 0x100) == 0)
+        return;
+
+    PutBitmap3(rcView, (ship.x - 0x2000) / 1024, (ship.y - 4096) / 1024, &rcShip[ShipPowerup], 0);
 }
 
 //----- (004179D0) --------------------------------------------------------
@@ -792,6 +782,7 @@ void GetShipPos(int *pos_x, int *pos_y)
 {
     if (pos_x)
         *pos_x = ship.x;
+
     if (pos_y)
         *pos_y = ship.y;
 }

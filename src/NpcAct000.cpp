@@ -6,72 +6,47 @@
 #include "GameAttr.h"
 #include "Object.h"
 #include "Random.h"
-#include "Ship.h"
+#include "NpcShip.h"
 #include "Sound.h"
 #include "Stage.h"
 #include "TrigFuncs.h"
 
 //----- (00403960) --------------------------------------------------------
-void ActNpc000(Object *a1)
+void ActNpc000(Object *o)
 {
-    RECT v1; // [esp+10h] [ebp-10h] BYREF
+    RECT rc = {0, 0, 16, 16};
+    RECT rcStage; // [esp+10h] [ebp-10h] BYREF
 
-    a1->rect.left = 0;
-    a1->rect.top = 0;
-    a1->rect.right = 16;
-    a1->rect.bottom = 16;
-    if (a1->shock / 2 % 2)
+    o->rect = rc;
+
+    if (o->shock / 2 % 2)
     {
-        a1->rect.top += 16;
-        a1->rect.bottom += 16;
+        o->rect.top += 16;
+        o->rect.bottom += 16;
     }
-    GetStageRect(&v1);
-    if (a1->y > v1.bottom + 0x2000)
-        a1->cond = 0;
+    GetStageRect(&rcStage);
+    if (o->y > rcStage.bottom + 0x2000)
+        o->cond = 0;
 }
 
 //----- (00403A10) --------------------------------------------------------
 void ActNpc001_Explode(Object *a1)
 {
-    int v1;     // ecx
-    int v2;     // ecx
-    RECT rc[7]; // [esp+0h] [ebp-70h]
+    RECT rc[7] = {
+        {0, 0, 32, 32},
+        {32, 0, 64, 32},
+        {64, 0, 96, 32},
+        {96, 0, 128, 32},
+        {128, 0, 160, 32},
+        {160, 0, 192, 32},
+        {192, 0, 224, 32},
+    };
 
-    rc[0].left = 0;
-    rc[0].top = 0;
-    rc[0].right = 32;
-    rc[0].bottom = 32;
-    rc[1].left = 32;
-    rc[1].top = 0;
-    rc[1].right = 64;
-    rc[1].bottom = 32;
-    rc[2].left = 64;
-    rc[2].top = 0;
-    rc[2].right = 96;
-    rc[2].bottom = 32;
-    rc[3].left = 96;
-    rc[3].top = 0;
-    rc[3].right = 128;
-    rc[3].bottom = 32;
-    rc[4].left = 128;
-    rc[4].top = 0;
-    rc[4].right = 160;
-    rc[4].bottom = 32;
-    rc[5].left = 160;
-    rc[5].top = 0;
-    rc[5].right = 192;
-    rc[5].bottom = 32;
-    rc[6].left = 192;
-    rc[6].top = 0;
-    rc[6].right = 224;
-    rc[6].bottom = 32;
-    v1 = a1->count1;
-    a1->count1 = v1 + 1;
-    if (v1 >= 4)
-        v2 = a1->y + 0x1000;
+    if (++a1->count1 >= 4)
+        a1->y += 0x1000;
     else
-        v2 = a1->y + 0x400;
-    a1->y = v2;
+        a1->y += 0x400;
+
     if (++a1->count3 > 2)
     {
         a1->count3 = 0;
@@ -86,98 +61,62 @@ void ActNpc001_Explode(Object *a1)
 //----- (00403B90) --------------------------------------------------------
 void ActNpc002_CloudL(Object *o)
 {
+    RECT rc = {0, 0, 48, 24};
     o->y += 0x800;
-    
+
     if (o->y > 0x2C000)
         o->cond = 0;
 
-    o->rect.left = 0;
-    o->rect.top = 0;
-    o->rect.right = 48;
-    o->rect.bottom = 24;
+    o->rect = rc;
 }
 
 //----- (00403C00) --------------------------------------------------------
-void ActNpc003_CloudS(Object *a1)
+void ActNpc003_CloudS(Object *o)
 {
-    a1->y += 0x200;
-    if (a1->y > 0x2C000)
-        a1->cond = 0;
-    a1->rect.left = 0;
-    a1->rect.top = 24;
-    a1->rect.right = 16;
-    a1->rect.bottom = 32;
+    RECT rc = {0, 24, 16, 32};
+    o->y += 0x200;
+    if (o->y > 0x2C000)
+        o->cond = 0;
+    o->rect = rc;
 }
 
 //----- (00403C70) --------------------------------------------------------
-void ActNpc004_Puff(Object *a1)
+void ActNpc004_Puff(Object *o)
 {
-    RECT v1[5]; // [esp+0h] [ebp-50h]
+    RECT rc[5] = {
+        {0, 56, 8, 64},
+        {8, 56, 16, 64},
+        {16, 56, 24, 64},
+        {24, 56, 32, 64},
+        {32, 56, 40, 64},
+    };
 
-    v1[0].left = 0;
-    v1[0].top = 56;
-    v1[0].right = 8;
-    v1[0].bottom = 64;
-    v1[1].left = 8;
-    v1[1].top = 56;
-    v1[1].right = 16;
-    v1[1].bottom = 64;
-    v1[2].left = 16;
-    v1[2].top = 56;
-    v1[2].right = 24;
-    v1[2].bottom = 64;
-    v1[3].left = 24;
-    v1[3].top = 56;
-    v1[3].right = 32;
-    v1[3].bottom = 64;
-    v1[4].left = 32;
-    v1[4].top = 56;
-    v1[4].right = 40;
-    v1[4].bottom = 64;
-    a1->y += 0x2000;
-    if (a1->y > 0x2C000)
-        a1->cond = 0;
-    if (++a1->count3 > 1)
+    o->y += 0x2000;
+    if (o->y > 0x2C000)
+        o->cond = 0;
+    if (++o->count3 > 1)
     {
-        a1->count3 = 0;
-        ++a1->count2;
+        o->count3 = 0;
+        ++o->count2;
     }
-    if (a1->count2 <= 4)
-        a1->rect = v1[a1->count2];
+    if (o->count2 <= 4)
+        o->rect = rc[o->count2];
     else
-        a1->cond = 0;
+        o->cond = 0;
 }
 
 //----- (00403DA0) --------------------------------------------------------
 void ActNpc005_Hanger(Object *o)
 {
-    int v1;     // ecx
-    RECT v2[6]; // [esp+4h] [ebp-60h]
+    RECT rc[6] = {
+        {0, 0, 24, 24},
+        {24, 0, 48, 24},
+        {48, 0, 72, 24},
+        {72, 0, 96, 24},
+        {96, 0, 120, 24},
+        {120, 0, 144, 24},
+    };
 
-    v2[0].left = 0;
-    v2[0].top = 0;
-    v2[0].right = 24;
-    v2[0].bottom = 24;
-    v2[1].left = 24;
-    v2[1].top = 0;
-    v2[1].right = 48;
-    v2[1].bottom = 24;
-    v2[2].left = 48;
-    v2[2].top = 0;
-    v2[2].right = 72;
-    v2[2].bottom = 24;
-    v2[3].left = 72;
-    v2[3].top = 0;
-    v2[3].right = 96;
-    v2[3].bottom = 24;
-    v2[4].left = 96;
-    v2[4].top = 0;
-    v2[4].right = 120;
-    v2[4].bottom = 24;
-    v2[5].left = 120;
-    v2[5].top = 0;
-    v2[5].right = 144;
-    v2[5].bottom = 24;
     if (o->life > 994)
     {
         switch (o->state)
@@ -187,9 +126,7 @@ void ActNpc005_Hanger(Object *o)
             o->y = 0x28000;
             o->ym = -0x1800;
             PlaySound(26);
-            goto LABEL_5;
         case 10:
-        LABEL_5:
             o->ym += 0x71;
             if (++o->count3 > 2)
             {
@@ -198,22 +135,19 @@ void ActNpc005_Hanger(Object *o)
             }
             if (o->count2 > 2)
                 o->count2 = 0;
-            if (o->ym > 0)
-                goto LABEL_10;
-            break;
+
+            if (o->ym <= 0)
+                break;
         case 20:
-        LABEL_10:
             o->state = 30;
             o->flag |= 0x43u;
             o->damage = 1;
-            goto LABEL_11;
         case 30:
-        LABEL_11:
             if (ship.x >= o->x)
-                v1 = o->xm + 0x20;
+                o->xm += 0x20;
             else
-                v1 = o->xm - 0x20;
-            o->xm = v1;
+                o->xm -= 0x20;
+
             if (o->xm < -0x400)
                 o->xm = -0x400;
             if (o->xm > 0x400)
@@ -254,7 +188,7 @@ void ActNpc005_Hanger(Object *o)
         }
         o->x += o->xm;
         o->y += o->ym;
-        o->rect = v2[o->count2];
+        o->rect = rc[o->count2];
         if (o->life <= 997)
         {
             if (o->state >= 20)
@@ -320,21 +254,13 @@ void ActNpc006_CloudGen(Object *o)
 //----- (00404340) --------------------------------------------------------
 void ActNpc007_Powerup(Object *o)
 {
-    int v1;     // [esp+0h] [ebp-34h]
-    RECT rc[3]; // [esp+4h] [ebp-30h]
+    int v1;
+    RECT rc[3] = {
+        {240, 48, 256, 64},
+        {240, 64, 256, 80},
+        {240, 80, 256, 96},
+    };
 
-    rc[0].left = 240;
-    rc[0].top = 48;
-    rc[0].right = 256;
-    rc[0].bottom = 64;
-    rc[1].left = 240;
-    rc[1].top = 64;
-    rc[1].right = 256;
-    rc[1].bottom = 80;
-    rc[2].left = 240;
-    rc[2].top = 80;
-    rc[2].right = 256;
-    rc[2].bottom = 96;
     v1 = o->state;
     if (v1)
     {
@@ -375,20 +301,12 @@ LABEL_11:
 //----- (004044E0) --------------------------------------------------------
 void ActNpc008_Climber(Object *o)
 {
-    RECT rc[3]; // [esp+4h] [ebp-30h]
+    RECT rc[3] = {
+        {0, 48, 16, 64},
+        {16, 48, 32, 64},
+        {32, 48, 48, 64},
+    };
 
-    rc[0].left = 0;
-    rc[0].top = 48;
-    rc[0].right = 16;
-    rc[0].bottom = 64;
-    rc[1].left = 16;
-    rc[1].top = 48;
-    rc[1].right = 32;
-    rc[1].bottom = 64;
-    rc[2].left = 32;
-    rc[2].top = 48;
-    rc[2].right = 48;
-    rc[2].bottom = 64;
     switch (o->state)
     {
     case 0:
@@ -397,9 +315,7 @@ void ActNpc008_Climber(Object *o)
         PlaySound(26);
         o->state = 10;
         o->count2 = 2;
-        goto LABEL_3;
     case 10:
-    LABEL_3:
         o->ym += 32;
         if (o->ym <= -0x200)
             goto LABEL_9;
@@ -446,6 +362,7 @@ void ActNpc008_Climber(Object *o)
 void ActNpc009_Kagome(Object *o)
 {
     unsigned char v1; // [esp+17h] [ebp-1h]
+    RECT rc = {48, 48, 64, 64};
 
     switch (o->state)
     {
@@ -457,9 +374,7 @@ void ActNpc009_Kagome(Object *o)
         o->child = 16 * (KagomeCount++ & 0xF);
         o->rot1 = 0x800;
         o->state = 10;
-        goto LABEL_6;
     case 10:
-    LABEL_6:
         if (o->type2)
             o->rot1 -= 16;
         else
@@ -483,10 +398,7 @@ void ActNpc009_Kagome(Object *o)
         v1 = o->child;
         o->x = o->rot1 * GetCos(v1) / 16 + 0xF000;
         o->y = o->rot1 * GetSin(v1) / 16 + 0x1E000;
-        o->rect.left = 48;
-        o->rect.top = 48;
-        o->rect.right = 64;
-        o->rect.bottom = 64;
+        o->rect = rc;
         o->rect.left += 16 * ((o->life - 2) / 2);
         o->rect.right += 16 * ((o->life - 2) / 2);
         if (o->shock / 2 % 2)
@@ -507,9 +419,10 @@ void ActNpc009_Kagome(Object *o)
 //----- (004049A0) --------------------------------------------------------
 void ActNpc011_Wing(Object *o)
 {
-    int v1;           // [esp+0h] [ebp-1Ch]
-    int state;        // [esp+4h] [ebp-18h]
-    unsigned char v3; // [esp+1Bh] [ebp-1h]
+    int v1;
+    int state;
+    RECT rc = {0, 32, 40, 48};
+    unsigned char v3;
 
     state = o->state;
     if (state)
@@ -606,76 +519,54 @@ void ActNpc012_WingCorpse(Object *o)
 }
 
 //----- (00404CB0) --------------------------------------------------------
-void ActNpc013_Bullet(Object *a1)
+void ActNpc013_Bullet(Object *o)
 {
-    int v1;     // [esp+0h] [ebp-44h]
-    RECT v2[4]; // [esp+4h] [ebp-40h]
+    int v1; // [esp+0h] [ebp-44h]
+    RECT rc[4] = {
+        {144, 32, 160, 48},
+        {160, 32, 176, 48},
+        {176, 32, 192, 48},
+        {192, 32, 208, 48},
+    };
 
-    v2[0].left = 144;
-    v2[0].top = 32;
-    v2[0].right = 160;
-    v2[0].bottom = 48;
-    v2[1].left = 160;
-    v2[1].top = 32;
-    v2[1].right = 176;
-    v2[1].bottom = 48;
-    v2[2].left = 176;
-    v2[2].top = 32;
-    v2[2].right = 192;
-    v2[2].bottom = 48;
-    v2[3].left = 192;
-    v2[3].top = 32;
-    v2[3].right = 208;
-    v2[3].bottom = 48;
-    v1 = a1->state;
+    v1 = o->state;
     if (!v1)
     {
-        a1->xm = 2 * GetCos(a1->type2);
-        a1->ym = 2 * GetSin(a1->type2);
-        a1->state = 10;
+        o->xm = 2 * GetCos(o->type2);
+        o->ym = 2 * GetSin(o->type2);
+        o->state = 10;
         goto LABEL_5;
     }
     if (v1 == 10)
     {
     LABEL_5:
-        a1->x += a1->xm;
-        a1->y += a1->ym;
+        o->x += o->xm;
+        o->y += o->ym;
     }
-    if (++a1->count3 > 1)
+    if (++o->count3 > 1)
     {
-        a1->count3 = 0;
-        ++a1->count2;
+        o->count3 = 0;
+        ++o->count2;
     }
-    if (a1->count2 > 3)
-        a1->count2 = 0;
-    if (a1->x < (signed int)-0x10000 || a1->x > 0x2E000 || a1->y < (signed int)-0x10000 || a1->y > 0x38000)
-        a1->cond = 0;
+    if (o->count2 > 3)
+        o->count2 = 0;
+    if (o->x < (signed int)-0x10000 || o->x > 0x2E000 || o->y < (signed int)-0x10000 || o->y > 0x38000)
+        o->cond = 0;
 
-    a1->rect = v2[a1->count2];
+    o->rect = rc[o->count2];
 }
 
 //----- (00404E50) --------------------------------------------------------
 void ActNpc014_BulletSlow(Object *o)
 {
-    int v1;     // [esp+0h] [ebp-44h]
-    RECT v2[4]; // [esp+4h] [ebp-40h]
+    int v1;
+    RECT v2[4] = {
+        {144, 32, 160, 48},
+        {160, 32, 176, 48},
+        {176, 32, 192, 48},
+        {192, 32, 208, 48},
+    };
 
-    v2[0].left = 144;
-    v2[0].top = 32;
-    v2[0].right = 160;
-    v2[0].bottom = 48;
-    v2[1].left = 160;
-    v2[1].top = 32;
-    v2[1].right = 176;
-    v2[1].bottom = 48;
-    v2[2].left = 176;
-    v2[2].top = 32;
-    v2[2].right = 192;
-    v2[2].bottom = 48;
-    v2[3].left = 192;
-    v2[3].top = 32;
-    v2[3].right = 208;
-    v2[3].bottom = 48;
     v1 = o->state;
     if (!v1)
     {
@@ -710,7 +601,8 @@ void ActNpc010_Unused_(Object *o)
         {208, 112, 224, 128},
         {224, 112, 240, 128},
         {192, 128, 208, 144},
-        {208, 128, 224, 144}};
+        {208, 128, 224, 144},
+    };
 
     if (!o->state)
     {
@@ -731,15 +623,10 @@ void ActNpc010_Unused_(Object *o)
 //----- (00405090) --------------------------------------------------------
 void ActNpc015_Boss1(Object *o)
 {
-    int v1;              // eax
-    int v2;              // eax
-    int v3;              // ecx
-    unsigned __int16 v4; // ax
-    unsigned __int16 v5; // ax
-    int v6;              // [esp-8h] [ebp-24h]
-    int v7;              // [esp-8h] [ebp-24h]
-    int i;               // [esp+4h] [ebp-18h]
-    unsigned char v9;  // [esp+1Bh] [ebp-1h]
+    int v6;           // [esp-8h] [ebp-24h]
+    int v7;           // [esp-8h] [ebp-24h]
+    int i;            // [esp+4h] [ebp-18h]
+    unsigned char v9; // [esp+1Bh] [ebp-1h]
 
     if (o->state < 100 && o->life < 872)
     {
@@ -784,10 +671,9 @@ void ActNpc015_Boss1(Object *o)
             else
                 o->xm -= 16;
             if (o->y >= 0x8000)
-                v1 = o->ym - 8;
+                o->ym -= 8;
             else
-                v1 = o->ym + 8;
-            o->ym = v1;
+                o->ym += 8;
         }
         goto LABEL_42;
     case 30:
@@ -800,10 +686,10 @@ void ActNpc015_Boss1(Object *o)
         else
             o->xm += 0x10;
         if (o->y >= 0x8000)
-            v2 = o->ym - 8;
+            o->ym -= 8;
         else
-            v2 = o->ym + 8;
-        o->ym = v2;
+            o->ym += 8;
+
         goto LABEL_42;
     case 100:
         o->state = 110;
@@ -814,18 +700,19 @@ void ActNpc015_Boss1(Object *o)
         goto LABEL_27;
     case 110:
     LABEL_27:
-        v3 = o->count1;
-        o->count1 = v3 + 1;
-        if (v3 < 60)
+        if (o->count1++ < 60)
             goto LABEL_42;
+
         if (o->x >= 0xF000)
             o->xm = -0x100;
         else
             o->xm = 0x100;
+
         o->ym = 341;
         o->state = 120;
         o->count1 = -2;
         PlaySound(12);
+
         if ((ship.cond & 2) == 0)
         {
             AddScore(o->score);
@@ -834,16 +721,16 @@ void ActNpc015_Boss1(Object *o)
         for (i = 0; i < 20; ++i)
         {
             v6 = o->y + ((GetRandom(16) - 4) << 10);
-            v4 = GetRandom(96);
-            CreateEntity(1, o->x + ((v4 - 48) << 10), v6, 0);
+
+            CreateEntity(1, o->x + ((GetRandom(96) - 48) << 10), v6, 0);
         }
     LABEL_36:
         if (++o->count1 > 5)
         {
             o->count1 = GetRandom(4);
             v7 = o->y + ((GetRandom(16) - 4) << 10);
-            v5 = GetRandom(96);
-            CreateEntity(1, o->x + ((v5 - 48) << 10), v7, 0);
+
+            CreateEntity(1, o->x + ((GetRandom(96) - 48) << 10), v7, 0);
         }
         if (o->y < 139264)
             goto LABEL_42;
@@ -936,28 +823,19 @@ void ActNpc015_Boss1(Object *o)
 //----- (00405900) --------------------------------------------------------
 void ActNpc016_Boss1Eye(Object *a1)
 {
-    RECT v2[3];            // [esp+4h] [ebp-38h]
-    Object *v3;            // [esp+34h] [ebp-8h]
-    unsigned char angle; // [esp+3Bh] [ebp-1h]
+    RECT rc[3] = {
+        {0, 64, 16, 80},
+        {32, 64, 48, 80},
+        {64, 64, 80, 80},
+    };
+    Object *parent = (Object *)a1->type2;
+    unsigned char angle;
 
-    v2[0].left = 0;
-    v2[0].top = 64;
-    v2[0].right = 16;
-    v2[0].bottom = 80;
-    v2[1].left = 32;
-    v2[1].top = 64;
-    v2[1].right = 48;
-    v2[1].bottom = 80;
-    v2[2].left = 64;
-    v2[2].top = 64;
-    v2[2].right = 80;
-    v2[2].bottom = 80;
-    v3 = (Object *)a1->type2;
     switch (a1->state)
     {
     case 0:
-        a1->child = a1->x - v3->x;
-        a1->rot1 = a1->y - v3->y;
+        a1->child = a1->x - parent->x;
+        a1->rot1 = a1->y - parent->y;
         a1->count4 = byte_44C265;
         byte_44C265 = (byte_44C265 + 1) % 4;
         a1->state = 10;
@@ -965,9 +843,9 @@ void ActNpc016_Boss1Eye(Object *a1)
         goto LABEL_3;
     case 10:
     LABEL_3:
-        a1->x = a1->child + v3->x;
-        a1->y = a1->rot1 + v3->y;
-        if (v3->state != 30 && v3->count1 != 20)
+        a1->x = a1->child + parent->x;
+        a1->y = a1->rot1 + parent->y;
+        if (parent->state != 30 && parent->count1 != 20)
             goto LABEL_20;
         a1->state = 20;
         a1->count2 = 1;
@@ -976,13 +854,13 @@ void ActNpc016_Boss1Eye(Object *a1)
         SetCaret(1, a1->x, a1->y, (int)a1);
     LABEL_6:
         angle = GetArktan(a1->x - ship.x, a1->y - ship.y, 64);
-        a1->x = a1->child + v3->x + 4 * GetCos(angle);
-        a1->y = a1->rot1 + v3->y + 4 * GetSin(angle);
-        if (v3->state >= 40 && v3->state < 100 && v3->count1 / 39 == a1->count4)
+        a1->x = a1->child + parent->x + 4 * GetCos(angle);
+        a1->y = a1->rot1 + parent->y + 4 * GetSin(angle);
+        if (parent->state >= 40 && parent->state < 100 && parent->count1 / 39 == a1->count4)
         {
-            if (v3->count1 % 39)
+            if (parent->count1 % 39)
             {
-                if (v3->count1 % 39 == 20)
+                if (parent->count1 % 39 == 20)
                 {
                     angle = GetArktan(a1->x - ship.x, a1->y - ship.y, 64);
                     CreateEntity(13, a1->x, a1->y, angle);
@@ -995,7 +873,7 @@ void ActNpc016_Boss1Eye(Object *a1)
                 PlaySound(30);
             }
         }
-        if (v3->state == 110 && v3->count1 / 10 == a1->count4)
+        if (parent->state == 110 && parent->count1 / 10 == a1->count4)
         {
             a1->score = 4;
         }
@@ -1003,7 +881,7 @@ void ActNpc016_Boss1Eye(Object *a1)
         {
             goto LABEL_20;
         }
-        ++v3->rot1;
+        ++parent->rot1;
         a1->state = 100;
         a1->count2 = 2;
         a1->shock = 0;
@@ -1013,18 +891,18 @@ void ActNpc016_Boss1Eye(Object *a1)
         CreateEntity(1, a1->x, a1->y, 0);
         PlaySound(11);
     LABEL_18:
-        a1->x = a1->child + v3->x;
-        a1->y = a1->rot1 + v3->y;
+        a1->x = a1->child + parent->x;
+        a1->y = a1->rot1 + parent->y;
         if (!(a1->count1++ % 6))
             CreateEntity(29, a1->x, a1->y + 0x2000, 0);
     LABEL_20:
-        a1->rect = v2[a1->count2];
+        a1->rect = rc[a1->count2];
         if (a1->shock / 2 % 2)
         {
             a1->rect.left += 16;
             a1->rect.right += 16;
         }
-        if ((v3->cond & 1) == 0 || v3->type != 15)
+        if ((parent->cond & 1) == 0 || parent->type != 15)
             a1->cond = 0;
         return;
     case 20:
@@ -1039,24 +917,13 @@ void ActNpc016_Boss1Eye(Object *a1)
 //----- (00405DE0) --------------------------------------------------------
 void ActNpc017_Boss1BigEye(Object *o)
 {
-    unsigned __int16 v1; // ax
-    int v2;              // [esp-8h] [ebp-40h]
-    RECT rc[3];          // [esp+4h] [ebp-34h]
-    Object *parent;      // [esp+34h] [ebp-4h]
+    RECT rc[3] = {
+        {96, 80, 120, 128},
+        {0, 0, 0, 0},
+        {80, 64, 96, 80},
+    };
+    Object *parent = (Object *)o->type2;
 
-    rc[0].left = 96;
-    rc[0].top = 80;
-    rc[0].right = 120;
-    rc[0].bottom = 128;
-    rc[1].left = 0;
-    rc[1].top = 0;
-    rc[1].right = 0;
-    rc[1].bottom = 0;
-    rc[2].left = 80;
-    rc[2].top = 64;
-    rc[2].right = 96;
-    rc[2].bottom = 80;
-    parent = (Object *)o->type2;
     switch (o->state)
     {
     case 0:
@@ -1079,9 +946,7 @@ void ActNpc017_Boss1BigEye(Object *o)
         LABEL_8:
             if (!(o->count1 % 10))
             {
-                v2 = o->y + ((GetRandom(48) - 32) << 10);
-                v1 = GetRandom(32);
-                CreateEntity(1, o->x + ((v1 - 16) << 10), v2, 0);
+                CreateEntity(1, o->x + ((GetRandom(32) - 16) << 10), o->y + ((GetRandom(48) - 32) << 10), 0);
                 PlaySound(26);
             }
             if (++o->count1 >= 50)
@@ -1154,22 +1019,13 @@ void ActNpc017_Boss1BigEye(Object *o)
 //----- (00406240) --------------------------------------------------------
 void ActNpc018_BulletLong(Object *a1)
 {
-    int v1;     // edx
-    int v2;     // [esp+0h] [ebp-34h]
-    RECT v3[3]; // [esp+4h] [ebp-30h]
+    int v2; // [esp+0h] [ebp-34h]
+    RECT rc[3] = {
+        {0, 96, 16, 112},
+        {32, 96, 48, 112},
+        {64, 96, 80, 112},
+    };
 
-    v3[0].left = 0;
-    v3[0].top = 96;
-    v3[0].right = 16;
-    v3[0].bottom = 112;
-    v3[1].left = 32;
-    v3[1].top = 96;
-    v3[1].right = 48;
-    v3[1].bottom = 112;
-    v3[2].left = 64;
-    v3[2].top = 96;
-    v3[2].right = 80;
-    v3[2].bottom = 112;
     if (!a1->type2)
     {
         a1->count2 = 2;
@@ -1195,11 +1051,12 @@ void ActNpc018_BulletLong(Object *a1)
         a1->y += 0x1000;
         goto LABEL_13;
     }
+
     if (a1->type2 == 1)
-        v1 = a1->x - 0x2000;
+        a1->x -= 0x2000;
     else
-        v1 = a1->x + 0x2000;
-    a1->x = v1;
+        a1->x += 0x2000;
+
     a1->y += 4096;
     if (++a1->count1 >= 5)
     {
@@ -1211,7 +1068,8 @@ void ActNpc018_BulletLong(Object *a1)
 LABEL_16:
     if (a1->y > 0x2A000)
         a1->cond = 0;
-    a1->rect = v3[a1->count2];
+
+    a1->rect = rc[a1->count2];
     if (a1->type2 == 2 && a1->count2 < 2)
     {
         a1->rect.left += 16;

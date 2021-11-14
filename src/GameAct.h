@@ -3,6 +3,8 @@
 
 #include <windows.h>
 
+int ModeEnding();
+
 int ModeAction(HWND a1);
 
 #endif

@@ -22,6 +22,12 @@ extern int EntityStageCount;
 extern char szFile[MAX_PATH];
 extern StageState g_StageState;
 
+extern int debugStage;
+extern int debugStageScroll;
+extern int debugSpeed;
+extern int debugPowerup;
+extern int debugLife;
+
 void PrepPxeve();
 BOOL ResetEntityStage();
 BOOL LoadPxeve(int stage);

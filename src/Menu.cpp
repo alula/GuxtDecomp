@@ -8,6 +8,7 @@
 #include "Input.h"
 #include "PlayRecord.h"
 #include "Sound.h"
+#include "Stage.h"
 #include "Text.h"
 #include "WinDebugDrag.h"
 #include "WinMain.h"
@@ -167,6 +168,11 @@ int MenuLoop()
             switch (curSel)
             {
             case 0:
+                // debugStage = 5; // TODO: for debugging
+                // debugPowerup = 2;
+                // debugLife = 99;
+                // SetInScoreAttack(1);
+
                 SetInScoreAttack(0);
                 SetInReplay(0);
                 v13 = 2;

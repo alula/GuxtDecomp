@@ -6,7 +6,7 @@
 #include "Draw.h"
 #include "Game.h"
 #include "Map.h"
-#include "Ship.h"
+#include "NpcShip.h"
 #include "Sound.h"
 #include "Stage.h"
 #include "Text.h"
