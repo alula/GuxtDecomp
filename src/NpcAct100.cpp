@@ -261,7 +261,7 @@ void ActNpc101(Object *o)
             o->xm = 4;
             o->count1 = -10;
             break;
-        default: // fallthrough
+        default:; // fallthrough
         }
     case 10:
         if (++o->count1 < 200)
