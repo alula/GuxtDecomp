@@ -185,7 +185,6 @@ void EndingPrint(FILE *a1, int a2, const char *a3)
 //----- (0041B470) --------------------------------------------------------
 int ModeAction(HWND a1)
 {
-    int v1;            // eax
     int v3;            // [esp-8h] [ebp-30h]
     int v4;            // [esp-4h] [ebp-2Ch]
     TriggerStruct v5;  // [esp+0h] [ebp-28h] BYREF
@@ -300,8 +299,7 @@ LABEL_27:
         EndPlayRecord();
         v4 = GetScore();
         v3 = GetCurrentStage();
-        v1 = GetInScoreAttack();
-        WritePlayRecord(v1, v3, v4);
+        WritePlayRecord(GetInScoreAttack(), v3, v4);
     }
     StopLoopSound(32);
     return v7;

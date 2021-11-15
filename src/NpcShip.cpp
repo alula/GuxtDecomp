@@ -86,7 +86,6 @@ void ShipCrushProc()
 //----- (00416190) --------------------------------------------------------
 BOOL ActPowerUp(Object *npc)
 {
-    BOOL result; // eax
     int type2;   // [esp+0h] [ebp-14h]
     int param;   // [esp+8h] [ebp-Ch]
     int o_x;     // [esp+Ch] [ebp-8h] BYREF
@@ -184,14 +183,13 @@ BOOL ActPowerUp(Object *npc)
         {
             PlaySound(34);
         LABEL_33:
-            result = 1;
+            return TRUE;
         }
         else
         {
             ShipCrushProc();
-            result = 0;
+            return FALSE;
         }
-        return result;
     }
 }
 

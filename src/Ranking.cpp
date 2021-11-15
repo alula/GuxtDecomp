@@ -55,7 +55,7 @@ int RankingViewLoop()
 //----- (0041B9A0) --------------------------------------------------------
 BOOL OpenRankingFile(RankingEntry *entries)
 {
-    char v3[268]; // [esp+0h] [ebp-120h] BYREF
+    char path[268]; // [esp+0h] [ebp-120h] BYREF
     int checksum; // [esp+110h] [ebp-10h] BYREF
     BOOL ret;     // [esp+114h] [ebp-Ch]
     FILE *file;   // [esp+118h] [ebp-8h]
@@ -63,19 +63,19 @@ BOOL OpenRankingFile(RankingEntry *entries)
 
     ret = 0;
     file = 0;
-    sprintf(v3, "%s\\%s", temp_guxtPath, RankingFile);
-    file = fopen(v3, "rb");
+    sprintf(path, "%s\\%s", temp_guxtPath, RankingFile);
+    file = fopen(path, "rb");
 
     if (!file)
         goto err;
 
-    if (fread(entries, 0x78u, 1u, file) != 1)
+    if (fread(entries, 10 * sizeof(RankingEntry), 1u, file) != 1)
         goto err;
 
     if (fread(&checksum, 4u, 1u, file) != 1)
         goto err;
 
-    if (fread(&unused, 1u, 1u, file) != 1)
+    if (fread(&unused, 1u, 1u, file) != 0)
         goto err;
 
     if (checksum == ComputeRankingChecksum(reinterpret_cast<const char *>(entries)))
@@ -125,7 +125,7 @@ int ComputeRankingChecksum(const char *raw)
     int v3;         // [esp+4h] [ebp-8h]
 
     v3 = 7;
-    for (i = 0; i < 10 * sizeof(RankingEntry); ++i)
+    for (i = 0; i < (10 * sizeof(RankingEntry)); ++i)
     {
         if ((int)i % 7 == 2)
             v3 -= raw[i];
@@ -210,11 +210,11 @@ void PutRankingView(RECT *rcView, RankingEntry *entries, int idx_under_score)
 }
 
 static int ranking_int = 0;
-static unsigned char ranking_0 = 0;
+static unsigned char rankInputX = 0;
 static unsigned char ranking_1 = 0;
 static unsigned char ranking_2 = 0;
-static unsigned char ranking_3 = 0;
-static unsigned char ranking_4 = 0;
+static unsigned char rankInputIdx = 0;
+static unsigned char rankInputY = 0;
 
 //----- (0041BF00) --------------------------------------------------------
 int RankingLoop()
@@ -258,7 +258,7 @@ int RankingLoop()
 }
 
 //----- (0041C080) --------------------------------------------------------
-BOOL WriteRankingFile(RankingEntry *entry)
+BOOL WriteRankingFile(RankingEntry *entries)
 {
     char path[264]; // [esp+0h] [ebp-118h] BYREF
     int csum;       // [esp+10Ch] [ebp-Ch] BYREF
@@ -267,15 +267,16 @@ BOOL WriteRankingFile(RankingEntry *entry)
 
     ret = FALSE;
     fd = 0;
-    csum = ComputeRankingChecksum((const char *)entry);
+    csum = ComputeRankingChecksum((const char *)entries);
 
     sprintf(path, "%s\\%s", temp_guxtPath, RankingFile);
     fd = fopen(path, "wb");
     if (!fd)
         goto err;
 
-    if (fwrite((void *)entry, 0x78u, 1u, fd) != 1)
+    if (fwrite((void *)entries, 10 * sizeof(RankingEntry), 1u, fd) != 1)
         goto err;
+
     if (fwrite(&csum, 4u, 1u, fd) != 1)
         goto err;
 
@@ -301,23 +302,22 @@ int SetRankingEntryIfEligible(RankingEntry *entries, int score)
 
     for (j = 9; j > i; --j)
     {
-
-        memcpy(&entries[j].name[0], &entries[j - 1].name[0], 8u);
+        memcpy(entries[j].name, entries[j - 1].name, 8u);
         entries[j].score = entries[j - 1].score;
     }
 
     entries[i].score = score;
-    memset(&entries[i], 0, 8u);
-
+    memset(entries[i].name, 0, 8u);
+    
     return i;
 }
 
 //----- (0041C200) --------------------------------------------------------
 void ResetRankingInput()
 {
-    ranking_0 = 0;
-    ranking_4 = 0;
-    ranking_3 = 0;
+    rankInputX = 0;
+    rankInputY = 0;
+    rankInputIdx = 0;
     ranking_1 = 0;
     ranking_2 = 0;
     ranking_int = 0;
@@ -339,16 +339,16 @@ BOOL RunRankingInput(char *input, TriggerStruct *trig)
                 switch (v3)
                 {
                 case 1:
-                    --ranking_0;
+                    --rankInputX;
                     break;
                 case 2:
-                    ++ranking_0;
+                    ++rankInputX;
                     break;
                 case 3:
-                    --ranking_4;
+                    --rankInputY;
                     break;
                 case 4:
-                    ++ranking_4;
+                    ++rankInputY;
                     break;
                 default:
                     break;
@@ -362,16 +362,16 @@ BOOL RunRankingInput(char *input, TriggerStruct *trig)
             switch (v3)
             {
             case 1:
-                --ranking_0;
+                --rankInputX;
                 break;
             case 2:
-                ++ranking_0;
+                ++rankInputX;
                 break;
             case 3:
-                --ranking_4;
+                --rankInputY;
                 break;
             case 4:
-                ++ranking_4;
+                ++rankInputY;
                 break;
             default:
                 break;
@@ -387,44 +387,47 @@ BOOL RunRankingInput(char *input, TriggerStruct *trig)
         ranking_1 = 0;
     }
 
-    if (ranking_0 > 9)
-        ranking_0 = 0;
-    if (ranking_0 < 0)
-        ranking_0 = 9;
-    if (ranking_4 > 9)
-        ranking_4 = 0;
-    if (ranking_4 < 0)
-        ranking_4 = 9;
+    if (rankInputX > 9)
+        rankInputX = 0;
+    if (rankInputX < 0)
+        rankInputX = 9;
+    if (rankInputY > 9)
+        rankInputY = 0;
+    if (rankInputY < 0)
+        rankInputY = 9;
 
     if ((trig->prev & 1) != 0)
     {
-        if (ranking_4 == 9 && (ranking_0 == 8 || ranking_0 == 9))
+        // OK button
+        if (rankInputY == 9 && (rankInputX == 8 || rankInputX == 9))
         {
             PlaySound(25);
             return FALSE;
         }
-        if (ranking_4 == 9 && (ranking_0 == 6 || ranking_0 == 7))
+
+        // Back button
+        if (rankInputY == 9 && (rankInputX == 6 || rankInputX == 7))
         {
-            if (ranking_3 > 0)
+            if (rankInputIdx > 0)
             {
-                input[ranking_3] = 32;
+                input[rankInputIdx] = ' ';
                 PlaySound(17);
-                --ranking_3;
+                --rankInputIdx;
             }
         }
-        else if (ranking_4 == 9 && ranking_0 == 5)
+        else if (rankInputY == 9 && rankInputX == 5)
         {
             PlaySound(1);
-            input[ranking_3] = 32;
-            if (ranking_3 < 6)
-                ++ranking_3;
+            input[rankInputIdx] = ' ';
+            if (rankInputIdx < 6)
+                ++rankInputIdx;
         }
         else
         {
             PlaySound(1);
-            input[ranking_3] = ranking_0 + 10 * ranking_4 + 32;
-            if (ranking_3 < 6)
-                ++ranking_3;
+            input[rankInputIdx] = rankInputX + 10 * rankInputY + 32;
+            if (rankInputIdx < 6)
+                ++rankInputIdx;
         }
     }
 
@@ -459,8 +462,8 @@ void PutRankingInput(RECT *rcView, char *a2)
     rect[1].top = 0;
     rect[1].right = 0;
     rect[1].bottom = 0;
-    PutBitmap3(rcView, 6 * ranking_3 + 38, 40, &rect[ranking_2 / 4 % 2], 11);
-    PutBitmap3(rcView, 8 * ranking_0 + 20, 8 * ranking_4 + 64, &rect[ranking_2 / 4 % 2], 11);
+    PutBitmap3(rcView, 6 * rankInputIdx + 38, 40, &rect[ranking_2 / 4 % 2], 11);
+    PutBitmap3(rcView, 8 * rankInputX + 20, 8 * rankInputY + 64, &rect[ranking_2 / 4 % 2], 11);
     PutBitmap3(rcView, 20, 8, &v6, 11);
     PutBitmap3(rcView, 90, 24, &v5, 11);
     PutNumber(rcView, 54, 24, GetScore(), 6, 0);

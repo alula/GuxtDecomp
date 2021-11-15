@@ -73,7 +73,6 @@ BOOL PollMessages()
 //----- (0041CE70) --------------------------------------------------------
 int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
-    int result;           // eax
     DWORD v6;             // [esp+2Ch] [ebp-120h]
     Mutex mutex;          // [esp+30h] [ebp-11Ch] BYREF
     CHAR WindowName[268]; // [esp+3Ch] [ebp-110h] BYREF
@@ -156,8 +155,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
     return 1;
 
 err:
-    result = 0;
-    return result;
+    return 0;
 }
 
 //----- (0041D280) --------------------------------------------------------
@@ -387,7 +385,6 @@ void SetScreenMode(unsigned short a1, int a2)
 //----- (0041DEA0) --------------------------------------------------------
 static LRESULT __stdcall GameWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
-    HMENU v4;              // eax
     struct tagPOINT v6;    // [esp-14h] [ebp-30h]
     HIMC v7;               // [esp+10h] [ebp-Ch]
     struct tagPOINT Point; // [esp+14h] [ebp-8h] BYREF
@@ -407,8 +404,7 @@ static LRESULT __stdcall GameWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM 
             Point.y = HIWORD(lParam);
             ClientToScreen(hWnd, &Point);
             v6 = Point;
-            v4 = GetSubMenu(hMenu, 0);
-            TrackPopupMenu(v4, 0, v6.x, v6.y, 0, hWnd, 0);
+            TrackPopupMenu(GetSubMenu(hMenu, 0), 0, v6.x, v6.y, 0, hWnd, 0);
             return 0;
         case 0x233u:
             DragFileProc(hWnd, (HDROP)wParam);
@@ -729,6 +725,7 @@ static BOOL SaveWindowRect(HWND hWnd, const char *file_name)
     {
         if (!GetWindowRect(hWnd, &rcPos))
             return FALSE;
+            
         wndpl.rcNormalPosition = rcPos;
     }
 

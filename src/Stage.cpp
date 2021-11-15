@@ -253,13 +253,9 @@ err:
 }
 
 //----- (004198B0) --------------------------------------------------------
-int SetCheckpointScroll()
+void SetCheckpointScroll()
 {
-    int result; // eax
-
-    result = GetCheckpointScrollValue();
-    g_StageState.checkpointStageScroll = result;
-    return result;
+    g_StageState.checkpointStageScroll = GetCheckpointScrollValue();
 }
 
 //----- (004198C0) --------------------------------------------------------
@@ -295,67 +291,67 @@ BOOL ShipCrushProc2()
 //----- (004199A0) --------------------------------------------------------
 int ActStageState(TriggerStruct *a1)
 {
-    int v1;     // eax
-    int v2;     // edx
-    int v3;     // ecx
-    int result; // eax
-    int v5;     // edx
-    int v6;     // eax
-
     switch (g_StageState.state)
     {
     case 0:
-        v1 = g_StageState.centerTextMiscTimer++;
-        if (v1 > 100)
+        if (g_StageState.centerTextMiscTimer++ > 100)
         {
             FreeStageText();
             g_StageState.state = 10;
         }
-        goto LABEL_43;
+
+        return 2;
     case 10:
         if (CheckPlayRecordFlag())
             EndRecordPlayback();
-        goto LABEL_43;
+
+        return 2;
     case 20:
-        v2 = g_StageState.centerTextMiscTimer++;
-        if (v2 == 150)
+        if (g_StageState.centerTextMiscTimer++ == 150)
         {
             g_StageState.centerTextMiscTimer = 0;
             g_StageState.state = 21;
             SetShipBoost();
             PutStageText("");
         }
-        goto LABEL_43;
+
+        return 2;
     case 21:
-        v3 = g_StageState.centerTextMiscTimer++;
-        if (v3 == 150)
+        if (g_StageState.centerTextMiscTimer++ == 150)
         {
             g_StageState.state = 22;
             SetFadeActive();
         }
-        goto LABEL_43;
+
+        return 2;
     case 22:
         if (!CheckFadeEnd())
-            goto LABEL_43;
+            return 2;
+
         if (++g_StageState.currentStage <= 5)
         {
             InitStage();
-            goto LABEL_43;
+            return 2;
         }
+
         if ((g_StageState.gameFlags & 1) != 0)
-            goto LABEL_18;
+        {
+            EndRecordPlayback();
+            return 2;
+        }
+
         g_StageState.currentStage = 0;
         WriteGameCleared();
+
         return 7;
     case 30:
-        v5 = g_StageState.centerTextMiscTimer++;
-        if (v5 <= 100)
-            goto LABEL_43;
+        if (g_StageState.centerTextMiscTimer++ <= 100)
+            return 2;
+
         if (g_StageState.shipLivesCount <= 0)
         {
             if ((g_StageState.gameFlags & 1) != 0)
             {
-            LABEL_18:
                 EndRecordPlayback();
             }
             else
@@ -372,37 +368,35 @@ int ActStageState(TriggerStruct *a1)
             g_StageState.state = 40;
             SetFadeActive();
         }
-        goto LABEL_43;
+
+        return 2;
     case 31:
         if ((a1->prev & 1) != 0)
         {
             if ((g_StageState.gameFlags & 2) != 0)
-                result = 3;
+                return 3;
             else
-                result = 1;
+                return 1;
         }
-        else
+
+        if (g_StageState.centerTextMiscTimer == 250)
+            SetFadeActive();
+
+        if (g_StageState.centerTextMiscTimer++ > 300)
         {
-            if (g_StageState.centerTextMiscTimer == 250)
-                SetFadeActive();
-            v6 = g_StageState.centerTextMiscTimer++;
-            if (v6 > 300)
-            {
-                g_StageState.state = 32;
-                SetGameDelay(-1);
-            }
-        LABEL_43:
-            result = 2;
+            g_StageState.state = 32;
+            SetGameDelay(-1);
         }
-        return result;
+        return 2;
+
     case 32:
         if ((a1->prev & 1) == 0)
-            goto LABEL_43;
+            return 2;
+
         if ((g_StageState.gameFlags & 2) != 0)
-            result = 3;
+            return 3;
         else
-            result = 1;
-        return result;
+            return 1;
     case 40:
         if (CheckFadeEnd())
         {
@@ -410,9 +404,9 @@ int ActStageState(TriggerStruct *a1)
             ResetShip();
             StartStage();
         }
-        goto LABEL_43;
+        return 2;
     default:
-        goto LABEL_43;
+        return 2;
     }
 }
 
@@ -420,9 +414,8 @@ static const char *clearedFile = "cleared.bin";
 static const char *clearedMentama = "mentama.";
 
 //----- (00419C70) --------------------------------------------------------
-int WriteGameCleared()
+void WriteGameCleared()
 {
-    int result;   // eax
     char v1[264]; // [esp+0h] [ebp-110h] BYREF
     FILE *v2;     // [esp+10Ch] [ebp-4h]
 
@@ -433,9 +426,8 @@ int WriteGameCleared()
         fprintf(v2, "%s\n", clearedMentama);
         fclose(v2);
     }
-    result = g_StageState.gameFlags | 4;
+
     g_StageState.gameFlags |= 4u;
-    return result;
 }
 
 //----- (00419D00) --------------------------------------------------------

@@ -98,10 +98,9 @@ void EndPlayRecord()
 //----- (0041EF10) --------------------------------------------------------
 int ActPlayRecord()
 {
-    int result; // eax
-
     if (!record.action_tbl)
         return 0;
+        
     if (record.action_count < record.size && record.action_tbl[record.action_count].hold)
     {
         if (record.hold == record.action_tbl[record.action_count].hold)
@@ -110,14 +109,13 @@ int ActPlayRecord()
             record.hold = 0;
         }
         ++record.hold;
-        result = record.action_tbl[record.action_count].trg;
+        return record.action_tbl[record.action_count].trg;
     }
     else
     {
         record.flag |= 2u;
-        result = 0;
+        return 0;
     }
-    return result;
 }
 
 //----- (0041EFA0) --------------------------------------------------------

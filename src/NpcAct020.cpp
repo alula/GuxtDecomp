@@ -504,7 +504,6 @@ void ActNpc027_RHAsteroidL(Object *o)
         {0, 0, 0, 0},
     };
 
-    int v1; // eax
     int v2; // [esp+0h] [ebp-4h]
 
     if (o->state >= 100 || o->life >= 82)
@@ -549,12 +548,11 @@ void ActNpc027_RHAsteroidL(Object *o)
 void ActNpc028_RHAsteroidS(Object *o)
 {
     static RECT rcRHAsteroidS[3] = {
-        {0, 160, 64, 192},
-        {64, 160, 80, 192},
+        {64, 160, 80, 176},
+        {64, 176, 80, 192},
         {0, 0, 0, 0},
     };
 
-    int v1; // eax
     int v2; // [esp+0h] [ebp-4h]
 
     if (o->state >= 100 || o->life >= 94)
@@ -815,15 +813,12 @@ void ActNpc031_Sodi(Object *o)
 //----- (00408150) --------------------------------------------------------
 void ActNpc032_Boss2(Object *o)
 {
-    int v1;            // eax
-    unsigned short v2; // ax
-    unsigned short v3; // ax
-    int v4;            // [esp-8h] [ebp-28h]
-    int v5;            // [esp-8h] [ebp-28h]
-    intptr_t v6;       // [esp+0h] [ebp-20h]
-    int i;             // [esp+8h] [ebp-18h]
-    int v8;            // [esp+Ch] [ebp-14h]
-    int v9;            // [esp+Ch] [ebp-14h]
+    int v4;      // [esp-8h] [ebp-28h]
+    int v5;      // [esp-8h] [ebp-28h]
+    intptr_t v6; // [esp+0h] [ebp-20h]
+    int i;       // [esp+8h] [ebp-18h]
+    int v8;      // [esp+Ch] [ebp-14h]
+    int v9;      // [esp+Ch] [ebp-14h]
 
     if (o->state < 100 && o->count4 == 3)
     {
@@ -945,16 +940,14 @@ void ActNpc032_Boss2(Object *o)
         for (i = 0; i < 15; ++i)
         {
             v4 = o->y + ((GetRandom(48) - 20) << 10);
-            v2 = GetRandom(48);
-            CreateEntity(1, o->x + ((v2 - 24) << 10), v4, 0);
+            CreateEntity(1, o->x + ((GetRandom(48) - 24) << 10), v4, 0);
         }
     LABEL_46:
         if (++o->count1 > 5)
         {
             o->count1 = GetRandom(4);
             v5 = o->y + ((GetRandom(64) - 32) << 10);
-            v3 = GetRandom(64);
-            CreateEntity(1, o->x + ((v3 - 32) << 10), v5, 0);
+            CreateEntity(1, o->x + ((GetRandom(64) - 32) << 10), v5, 0);
         }
         if (o->y <= 0x36000)
         {

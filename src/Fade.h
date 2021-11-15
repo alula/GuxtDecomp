@@ -20,7 +20,7 @@ void EndingInitFade();
 void ResetFade();
 void SetFadeActive();
 BOOL CheckFadeEnd();
-int SetFadeWhiteActive(int a1, int a2);
+void SetFadeWhiteActive(int a1, int a2);
 BOOL CheckFadeWhiteEnd();
 void RecordEndFadeWhite();
 void ActFade();

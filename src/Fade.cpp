@@ -50,10 +50,8 @@ BOOL CheckFadeEnd()
 }
 
 //----- (00421390) --------------------------------------------------------
-int SetFadeWhiteActive(int a1, int a2)
+void SetFadeWhiteActive(int a1, int a2)
 {
-    int result; // eax
-
     g_Fade.wState = 10;
     g_Fade.wCount = 0;
     g_Fade.wRect.left = 0;
@@ -61,13 +59,11 @@ int SetFadeWhiteActive(int a1, int a2)
     g_Fade.wRect.top = a2;
     g_Fade.wRect.bottom = a2;
     g_Fade.wRect2.left = a1;
-    result = a1;
     g_Fade.wRect2.right = a1;
     g_Fade.wRect2.top = 0;
     g_Fade.wRect2.bottom = 160;
     g_Fade.wX = a1;
     g_Fade.unused = a2;
-    return result;
 }
 
 //----- (00421410) --------------------------------------------------------

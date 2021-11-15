@@ -234,16 +234,13 @@ int current_time;          // weak
 //----- (0041A610) --------------------------------------------------------
 int CountFramePerSecond()
 {
-    unsigned int tick_count; // eax
-
     if (TimerFirstCountFlag)
     {
         Timer1000Ticks = GetTickCount();
         TimerFirstCountFlag = FALSE;
     }
-    tick_count = GetTickCount();
     ++Timer1000TicksElapsed;
-    if (Timer1000Ticks + 1000 <= tick_count)
+    if (Timer1000Ticks + 1000 <= GetTickCount())
     {
         Timer1000Ticks += 1000;
         Timer1000TicksFinal = Timer1000TicksElapsed;

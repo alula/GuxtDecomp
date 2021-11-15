@@ -92,7 +92,7 @@ void LoadButtonConfig()
 //----- (00401310) --------------------------------------------------------
 int GetTrg()
 {
-    int v1;            // [esp+0h] [ebp-18h]
+    int v1;                   // [esp+0h] [ebp-18h]
     DirectInputProcStruct a1; // [esp+4h] [ebp-14h] BYREF
 
     v1 = 0;
@@ -191,14 +191,10 @@ static BOOL DirectInputDeviceLostCallback(BOOL acquire);
 //----- (004226F0) --------------------------------------------------------
 BOOL InitDirectInput(HINSTANCE hinst, HWND hWnd)
 {
-    BOOL result; // eax
-
     if (DirectInput8Create(hinst, 0x500u, IID_IDirectInput8A, (LPVOID *)&ppDI, 0))
-        result = FALSE;
+        return FALSE;
     else
-        result = InitDirectInputDevice(hWnd);
-
-    return result;
+        return InitDirectInputDevice(hWnd);
 }
 
 //----- (00422730) --------------------------------------------------------
@@ -233,17 +229,16 @@ BOOL InitDirectInputDevice(HWND hWnd)
 //----- (00422800) --------------------------------------------------------
 static BOOL CALLBACK EnumDevicesCallback(LPCDIDEVICEINSTANCE lpddi, SomeWeirdInputStruct *pvRef)
 {
-    BOOL result; // eax
-
     if ((someFlags & 1) == 0)
     {
         someFlags |= 1u;
         swis = pvRef;
     }
+
     if (swis->dinput->CreateDevice(lpddi->guidInstance, &did_ptr, 0))
     {
         swis->did2 = NULL;
-        result = TRUE;
+        return TRUE;
     }
     else if (did_ptr->QueryInterface(IID_IDirectInputDevice2A, (LPVOID *)&did_interface) >= 0)
     {
@@ -253,15 +248,13 @@ static BOOL CALLBACK EnumDevicesCallback(LPCDIDEVICEINSTANCE lpddi, SomeWeirdInp
             did_ptr = NULL;
         }
         swis->did2 = did_interface;
-        result = FALSE;
+        return FALSE;
     }
     else
     {
         g_DID2 = NULL;
-        result = TRUE;
+        return TRUE;
     }
-
-    return result;
 }
 
 //----- (004228D0) --------------------------------------------------------
