@@ -106,22 +106,130 @@ void ReleaseDirectSound()
         dsInstance->Release();
 }
 
+void pxMem_free(void **a1);
+
 //----- (00424AC0) --------------------------------------------------------
-BOOL Sound_CreateWAV(const char *lpName, const char *lpType, int a3)
+BOOL Sound_CreateWAV(const char *lpName, const char *lpType, int idx)
 {
-    // TODO
+    void *v4;             // [esp+0h] [ebp-44h] BYREF
+    DWORD v5;             // [esp+4h] [ebp-40h] BYREF
+    DSBUFFERDESC bufDsc;  // [esp+8h] [ebp-3Ch] BYREF
+    WAVEFORMATEX waveFmt; // [esp+1Ch] [ebp-28h] BYREF
+    int a4;               // [esp+30h] [ebp-14h] BYREF
+    void *v9;             // [esp+34h] [ebp-10h] BYREF
+    int v10;              // [esp+38h] [ebp-Ch]
+    DWORD v11;            // [esp+3Ch] [ebp-8h] BYREF
+    void *a5;             // [esp+40h] [ebp-4h] BYREF
+
+    v10 = 0;
+    a5 = 0;
+    if (!dsInstance)
+        return 1;
+
+    if (idx >= 0 && idx < 0x40)
+    {
+        if (Sound_LoadWAV(lpName, lpType, &waveFmt, &a4, &a5))
+        {
+            memset(&bufDsc, 0, sizeof(bufDsc));
+            bufDsc.dwSize = 20;
+            bufDsc.dwFlags = 32994;
+            bufDsc.dwBufferBytes = a4;
+            bufDsc.lpwfxFormat = &waveFmt;
+            if (!dsInstance->CreateSoundBuffer(&bufDsc, &_buffers[idx], 0) && !_buffers[idx]->Lock(0, a4, &v9, &v5, &v4, &v11, 0))
+            {
+                memcpy(v9, a5, v5);
+
+                if (v11)
+                    memcpy(v4, (char *)a5 + v5, v11);
+
+                _buffers[idx]->Unlock(v9, v5, v4, v11);
+                v10 = 1;
+            }
+        }
+    }
+
+    pxMem_free(&a5);
+
+    if (v10)
+        return TRUE;
+
+    if (!_buffers[idx])
+        return TRUE;
+
+    _buffers[idx]->Release();
+    _buffers[idx] = NULL;
+
     return TRUE;
+}
+
+//----- (00424C60) --------------------------------------------------------
+void pxMem_free(void **a1)
+{
+    if (*a1)
+    {
+        free(*a1);
+        *a1 = 0;
+    }
 }
 
 //----- (00424C90) --------------------------------------------------------
-BOOL Sound_LoadWAV(const char *lpName, const char *lpType, void *a3, int a4, int a5)
+BOOL Sound_LoadWAV(const char *lpName, const char *lpType, LPWAVEFORMATEX a3, int *pSize, void **pBuffer)
 {
-    // TODO
-    return TRUE;
+    char hdr[44]; // [esp+0h] [ebp-4Ch] BYREF
+    size_t a2;    // [esp+30h] [ebp-1Ch] BYREF
+    BOOL result;  // [esp+34h] [ebp-18h]
+    PixFile file; // [esp+38h] [ebp-14h] BYREF
+
+    result = 0;
+    *pBuffer = 0;
+    memset(a3, 0, sizeof(WAVEFORMATEX));
+
+    if (!OpenResource_(0, lpName, lpType, &file))
+        goto err;
+
+    if (!ReadFromFile(hdr, 1u, 44, &file))
+        goto err;
+
+    if (hdr[0] == 'R' && hdr[1] == 'I' && hdr[2] == 'F' && hdr[3] == 'F' && hdr[8] == 'W' && hdr[9] == 'A' && hdr[10] == 'V' && hdr[11] == 'E' && hdr[12] == 'f' && hdr[13] == 'm' && hdr[14] == 't' && hdr[15] == ' ')
+    {
+        memcpy(a3, &hdr[20], sizeof(WAVEFORMATEX));
+        if (a3->wFormatTag == 1 && (a3->nChannels == 1 || a3->nChannels == 2) && (a3->wBitsPerSample == 8 || a3->wBitsPerSample == 16))
+        {
+            SeekResource(&file, 12, 0);
+
+            while (ReadFromFile(hdr, 1u, 8, &file))
+            {
+                memcpy(&a2, &hdr[4], sizeof(a2));
+
+                if (!memcmp("data", hdr, 4u))
+                {
+                    if (pxMem_zero_alloc(pBuffer, a2))
+                    {
+                        if (ReadFromFile(*pBuffer, 1u, a2, &file))
+                        {
+                            *pSize = a2;
+                            result = 1;
+                        }
+                    }
+                    break;
+                }
+
+                SeekResource(&file, a2, 1);
+            }
+        }
+    }
+
+err:
+    if (!result)
+        pxMem_free(pBuffer);
+
+    CloseResource_(&file);
+
+    return result;
 }
 
 //----- (00424EB0) --------------------------------------------------------
-BOOL sub_424EB0(void **a1, size_t a2)
+BOOL pxMem_zero_alloc(void **a1, size_t a2)
 {
     *a1 = malloc(a2);
     if (!*a1)
@@ -293,7 +401,7 @@ BOOL Sound_CreatePtNoise(const char *lpName, const char *lpType, int channels, i
         OpenResource_(NULL, lpName, lpType, &file);
         desc.set_file_r(file.fp);
 
-        if (!noise.init()) 
+        if (!noise.init())
             goto err;
 
         noise.quality_set(channels, sps, bps);

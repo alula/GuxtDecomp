@@ -317,40 +317,48 @@ int PauseLoop(HWND hWnd, TriggerStruct *trig)
     v6 = 0;
     if ((trig->prev & 2) == 0)
         return 2;
+
     v3 = *trig;
+    
     rect.left = 64;
     rect.top = 48;
     rect.right = 104;
     rect.bottom = 56;
+
     SetReset(0);
     ClearTrg_(&a1a);
     PutBitmapPause_(23);
     PlaySound(44);
-    while (1)
+
+    while (true)
     {
         ++v6;
         if (Call_Escape())
         {
-            v5 = 0;
-            goto LABEL_14;
+            *trig = v3;
+            return 0;
         }
+
         if (GetGameReset())
         {
-            v5 = 1;
-            goto LABEL_14;
+            *trig = v3;
+            return 1;
         }
+        
         a1a.hold = GetTrg();
         UpdateTrg(&a1a);
+        
         if (v6 > 20 && (a1a.prev & 2) != 0)
             break;
+        
         PutRect(0, 0, &scWOffset_0, 23);
         PutRect(2, 2, &rect, 11);
+        
         if (!Flip_SystemTask())
             return 0;
     }
-    v5 = 2;
     PlaySound(45);
-LABEL_14:
+
     *trig = v3;
-    return v5;
+    return 2;
 }

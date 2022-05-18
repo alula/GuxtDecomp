@@ -5,6 +5,8 @@
 #include "PixFile.h"
 #include "WinMain.h"
 
+#include <vector>
+
 PlayRecord record;
 
 static const char *playRecordHeader = "070316_0";
@@ -100,7 +102,7 @@ int ActPlayRecord()
 {
     if (!record.action_tbl)
         return 0;
-        
+
     if (record.action_count < record.size && record.action_tbl[record.action_count].hold)
     {
         if (record.hold == record.action_tbl[record.action_count].hold)
@@ -186,16 +188,95 @@ end:
     return result;
 }
 
+struct SomePlayRecordStruct
+{
+    char *filename;
+    FILETIME time;
+};
+
 //----- (0041F1D0) --------------------------------------------------------
 void DeleteOldPlayRecord(const char *folder, unsigned int days)
 {
-    // TODO
+    FILETIME *p_time;                      // [esp-4h] [ebp-298h]
+    unsigned int j;                        // [esp+4h] [ebp-290h]
+    unsigned int a2;                       // [esp+Ch] [ebp-288h]
+    unsigned int i;                        // [esp+10h] [ebp-284h]
+    HANDLE hFindFile;                      // [esp+14h] [ebp-280h]
+    CHAR name[264];                        // [esp+18h] [ebp-27Ch] BYREF
+    WIN32_FIND_DATAA findFileData;         // [esp+120h] [ebp-174h] BYREF
+    HANDLE hFile;                          // [esp+268h] [ebp-2Ch]
+    SomePlayRecordStruct data;             // [esp+26Ch] [ebp-28h] BYREF
+    std::vector<SomePlayRecordStruct> vec; // [esp+278h] [ebp-1Ch] BYREF
+    int ret = 0;
+
+    sprintf(name, "%s\\*.%s", folder, replayPrefix);
+    hFindFile = FindFirstFileA(name, &findFileData);
+
+    while (hFindFile != INVALID_HANDLE_VALUE)
+    {
+        if (findFileData.cFileName[0] != '.' && (findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0 && (findFileData.dwFileAttributes & FILE_ATTRIBUTE_SYSTEM) == 0)
+        {
+            sprintf(name, "%s\\%s", folder, findFileData.cFileName);
+
+            hFile = CreateFileA(name, 0, 0, 0, 3u, 0x80u, 0);
+            if (hFile != INVALID_HANDLE_VALUE)
+            {
+                if (GetFileTime(hFile, 0, 0, &data.time))
+                {
+                    CloseHandle(hFile);
+                    data.filename = (char *)malloc(strlen(name) + 1);
+                    if (data.filename)
+                    {
+                        strcpy(data.filename, name);
+                        vec.push_back(data);
+                    }
+                }
+            }
+        }
+
+        if (!FindNextFileA(hFindFile, &findFileData))
+        {
+            FindClose(hFindFile);
+            break;
+        }
+    }
+
+    for (int i = vec.size() - 1; i != 0; --i)
+    {
+        for (int j = 0; j < i; j++)
+        {
+            p_time = &vec[j + 1].time;
+            SomePlayRecordStruct *v3 = &vec[j];
+
+            if (CompareFileTime(&v3->time, p_time) < 0)
+            {
+                // just std::swap jesus christ
+                SomePlayRecordStruct tmp = vec[j];
+                vec[j] = vec[j + 1];
+                vec[j + 1] = tmp;
+            }
+        }
+    }
+
+    while (days < vec.size())
+    {
+        DeleteFileA(vec[days].filename);
+        days++;
+    }
+
+    for (int i = 0; i < vec.size(); i++)
+    {
+        free(vec[i].filename);
+    }
+
+    ret = -1;
+    // there's no return, ret is dropped
 }
 
 //----- (0041F510) --------------------------------------------------------
 BOOL ReadPlayRecord(const char *a1, BOOL *a2)
 {
-    CHAR Name[268]; // [esp+0h] [ebp-138h] BYREF
+    CHAR name[268]; // [esp+0h] [ebp-138h] BYREF
     int header[2];  // [esp+10Ch] [ebp-2Ch] BYREF
     int i;          // [esp+118h] [ebp-20h]
     int v6;         // [esp+11Ch] [ebp-1Ch] BYREF
@@ -205,10 +286,9 @@ BOOL ReadPlayRecord(const char *a1, BOOL *a2)
     result = FALSE;
 
     if (a1)
-        strcpy(Name, a1);
+        strcpy(name, a1);
     else
-        // TODO: autoplay demos
-        sprintf(Name, "%s\\%s", pszPath, "demo.bin");
+        sprintf(name, "%s\\%s", pszPath, "demo.bin");
 
     if (!record.action_tbl)
         return FALSE;
@@ -216,19 +296,20 @@ BOOL ReadPlayRecord(const char *a1, BOOL *a2)
     memset(record.action_tbl, 0, 8 * record.size);
     memset(&file, 0, sizeof(file));
 
-    if (OpenResource_(0, Name, 0, &file) && ReadFromFile(header, 1u, 8, &file) && ReadFromFile(a2, 4u, 1, &file) && ReadFromFile(&v6, 4u, 1, &file) && !memcmp(playRecordHeader, header, 8u) && v6 <= 89998)
+    if (OpenResource_(0, name, 0, &file) && ReadFromFile(header, 1u, 8, &file) && ReadFromFile(a2, 4u, 1, &file) && ReadFromFile(&v6, 4u, 1, &file) && !memcmp(playRecordHeader, header, 8u) && v6 <= 89998)
     {
         for (i = 0; i < v6; ++i)
         {
             if (!VariableLengthRead(&record.action_tbl[i].hold, &file) || !VariableLengthRead(&record.action_tbl[i].trg, &file))
             {
-                goto LABEL_19;
+                goto end;
             }
         }
+
         result = TRUE;
     }
 
-LABEL_19:
+end:
     if (!result)
         memset(record.action_tbl, 0, 90000 * sizeof(PlayRecordAction));
 

@@ -8,7 +8,6 @@ extern int ScreenRenderHeight;
 extern BOOL TimerFirstCountFlag;
 extern const char *RankingFile;
 extern RECT scWOffset_0;
-extern const char *windowName[4];
 extern LPCSTR lpClassName;
 extern int screenSize;
 extern LPCSTR lpName;

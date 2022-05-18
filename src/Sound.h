@@ -14,8 +14,8 @@ BOOL UnusedInitDirectSound(HWND hwnd);
 void ReleaseDirectSound();
 
 BOOL Sound_CreateWAV(const char *lpName, const char *lpType, int a3);
-BOOL Sound_LoadWAV(const char *lpName, const char *lpType, void *a3, int a4, int a5);
-BOOL sub_424EB0(void **a1, size_t a2);
+BOOL Sound_LoadWAV(const char *lpName, const char *lpType, LPWAVEFORMATEX a3, int *pSize, void **pBuffer);
+BOOL pxMem_zero_alloc(void **a1, size_t a2);
 void Sound_ReleaseBuffer(int idx);
 void Sound_Replay(int idx);
 void Sound_Loop(int idx);
@@ -23,7 +23,7 @@ void Sound_Stop(int idx);
 
 void ClearLoopSound();
 void StopLoopSound2();
-BOOL LoadSound(const char* file_name, int idx);
+BOOL LoadSound(const char *file_name, int idx);
 
 void PlaySound(int idx);
 void PlayLoopSound(int idx);

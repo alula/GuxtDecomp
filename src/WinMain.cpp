@@ -20,9 +20,11 @@ int ScreenRenderHeight = 160;
 BOOL TimerFirstCountFlag = TRUE;
 const char *RankingFile = "ranking.bin";
 RECT scWOffset_0 = {0, 0, 120, 160};
-const char *windowName[4] = {"Guxt", "main.rect", "main.screen_mode", "Main"};
-// int mainrectFile = 4441624; // idb -> windowName[1]
-// char *mainscreemodeFile[2] = { "main.screen_mode", "Main" }; // weak -> windowName[2]
+
+LPCSTR windowTitle = "Guxt";
+LPCSTR mainRectName = "main.rect";
+LPCSTR mainScreenModeName = "main.screen_mode";
+
 LPCSTR lpClassName = "Main";
 int screenSize = 2;
 LPCSTR lpName = "directxsample";
@@ -58,7 +60,7 @@ static void SetUnusedPtrTempGuxt(const char *a1);
 //----- (0041CE10) --------------------------------------------------------
 BOOL PollMessages()
 {
-    struct tagMSG Msg; // [esp+0h] [ebp-1Ch] BYREF
+    MSG Msg; // [esp+0h] [ebp-1Ch] BYREF
 
     while (PeekMessageA(&Msg, 0, 0, 0, 0) || !GameFocussed)
     {
@@ -98,7 +100,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
         goto err;
 
     hMenu = LoadMenuA(hInstance, "MENU_MAIN");
-    sprintf(WindowName, "%s", windowName[0]);
+    sprintf(WindowName, "%s", windowTitle);
 
     hWnd = CreateWindowExA(0, lpClassName, WindowName, 0x800A0000, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, 0, 0, hInstance, 0);
     if (!mutex.MapFile(lpName, mutexName, hWnd))
@@ -125,7 +127,7 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
     InitText(0, 6, 12);
     SetScreenMode(0, 1);
 
-    if (!g_FullScreenMode && !SetWindowPosRect(hWnd, windowName[1], 0))
+    if (!g_FullScreenMode && !SetWindowPosRect(hWnd, mainRectName, 0))
         SetFullscreenWindowPos(hWnd);
 
     v6 = GetTickCount();
@@ -167,7 +169,7 @@ BOOL ReadMainScreenMode()
 
     result = FALSE;
     v3 = 0;
-    sprintf(v1, "%s\\%s", temp_guxtPath, windowName[2]);
+    sprintf(v1, "%s\\%s", temp_guxtPath, mainScreenModeName);
     v3 = fopen(v1, "rb");
     if (v3)
     {
@@ -284,31 +286,31 @@ static BOOL SetWindowAttr(HINSTANCE hInstance, const char *class_name, WNDPROC p
 //----- (0041DBB0) --------------------------------------------------------
 void SetScreenMode(unsigned short a1, int a2)
 {
-    struct tagRECT Rect; // [esp+10h] [ebp-18h] BYREF
-    int scale;           // [esp+20h] [ebp-8h]
-    int fullscreen;      // [esp+24h] [ebp-4h]
+    RECT Rect;      // [esp+10h] [ebp-18h] BYREF
+    int scale;      // [esp+20h] [ebp-8h]
+    int fullscreen; // [esp+24h] [ebp-4h]
 
     scale = screenSize;
     fullscreen = g_FullScreenMode;
 
     switch (a1)
     {
-    case 0x9C46:
+    case 40006:
         scale = 1;
         break;
-    case 0x9C47:
+    case 40007:
         scale = 2;
         break;
-    case 0x9C48:
+    case 40008:
         scale = 3;
         break;
-    case 0x9C4E:
+    case 40014:
         scale = 4;
         break;
-    case 0x9C4F:
+    case 40015:
         scale = 5;
         break;
-    case 0x9C54:
+    case 40020:
         fullscreen = g_FullScreenMode == 0;
         break;
     default:
@@ -335,36 +337,38 @@ void SetScreenMode(unsigned short a1, int a2)
             return;
         }
     }
-    CheckMenuItem(hMenu, 0x9C46u, 0);
-    CheckMenuItem(hMenu, 0x9C47u, 0);
-    CheckMenuItem(hMenu, 0x9C48u, 0);
-    CheckMenuItem(hMenu, 0x9C4Eu, 0);
-    CheckMenuItem(hMenu, 0x9C4Fu, 0);
+
+    CheckMenuItem(hMenu, 40006u, 0);
+    CheckMenuItem(hMenu, 40007u, 0);
+    CheckMenuItem(hMenu, 40008u, 0);
+    CheckMenuItem(hMenu, 40014u, 0);
+    CheckMenuItem(hMenu, 40015u, 0);
+
     switch (scale)
     {
     case 1:
-        CheckMenuItem(hMenu, 0x9C46u, 8u);
+        CheckMenuItem(hMenu, 40006u, 8u);
         break;
     case 2:
-        CheckMenuItem(hMenu, 0x9C47u, 8u);
+        CheckMenuItem(hMenu, 40007u, 8u);
         break;
     case 3:
-        CheckMenuItem(hMenu, 0x9C48u, 8u);
+        CheckMenuItem(hMenu, 40008u, 8u);
         break;
     case 4:
-        CheckMenuItem(hMenu, 0x9C4Eu, 8u);
+        CheckMenuItem(hMenu, 40014u, 8u);
         break;
     case 5:
-        CheckMenuItem(hMenu, 0x9C4Fu, 8u);
+        CheckMenuItem(hMenu, 40015u, 8u);
         break;
     default:
         break;
     }
 
     if (fullscreen)
-        CheckMenuItem(hMenu, 0x9C54u, 8u);
+        CheckMenuItem(hMenu, 40020u, 8u);
     else
-        CheckMenuItem(hMenu, 0x9C54u, 0);
+        CheckMenuItem(hMenu, 40020u, 0);
 
     if (fullscreen)
     {
@@ -385,113 +389,103 @@ void SetScreenMode(unsigned short a1, int a2)
 //----- (0041DEA0) --------------------------------------------------------
 static LRESULT __stdcall GameWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
-    struct tagPOINT v6;    // [esp-14h] [ebp-30h]
-    HIMC v7;               // [esp+10h] [ebp-Ch]
-    struct tagPOINT Point; // [esp+14h] [ebp-8h] BYREF
+    POINT v6;    // [esp-14h] [ebp-30h]
+    HIMC v7;     // [esp+10h] [ebp-Ch]
+    POINT Point; // [esp+14h] [ebp-8h] BYREF
 
-    // TODO: refactor, originally it was a single switch() statement.
-
-    if (Msg > 0x112)
+    switch (Msg)
     {
-        switch (Msg)
+    case WM_LBUTTONDOWN:
+        if (!g_FullScreenMode)
+            PostMessageA(hWnd, 0xA1u, 2u, lParam);
+        return 0;
+    case WM_RBUTTONDOWN:
+        Point.x = LOWORD(lParam);
+        Point.y = HIWORD(lParam);
+        ClientToScreen(hWnd, &Point);
+        v6 = Point;
+        TrackPopupMenu(GetSubMenu(hMenu, 0), 0, v6.x, v6.y, 0, hWnd, 0);
+        return 0;
+
+    case WM_DROPFILES:
+        DragFileProc(hWnd, (HDROP)wParam);
+        SetForegroundWindow(hWnd);
+        return 0;
+
+    case WM_IME_NOTIFY:
+        if (wParam != IMN_SETOPENSTATUS)
+            return 0;
+
+        v7 = ImmGetContext(hWnd);
+        ImmSetOpenStatus(v7, 0);
+        ImmReleaseContext(hWnd, v7);
+        return 0;
+
+    case WM_SYSCOMMAND:
+        if (wParam == SC_KEYMENU || wParam == SC_SCREENSAVE || wParam == SC_MONITORPOWER)
+            return 0;
+        break;
+
+    case WM_COMMAND:
+
+        switch (wParam)
         {
-        case 0x201u:
-            if (!g_FullScreenMode)
-                PostMessageA(hWnd, 0xA1u, 2u, lParam);
+        case 40002: // Exit
+            SendMessageA(hWnd, WM_CLOSE, 0, 0);
             return 0;
-        case 0x204u:
-            Point.x = LOWORD(lParam);
-            Point.y = HIWORD(lParam);
-            ClientToScreen(hWnd, &Point);
-            v6 = Point;
-            TrackPopupMenu(GetSubMenu(hMenu, 0), 0, v6.x, v6.y, 0, hWnd, 0);
+        case 40006: // x1
+        case 40007: // x2
+        case 40008: // x3
+        case 40014: // x4
+        case 40015: // x5
+        case 40020: // Full Screen
+            SetScreenMode(wParam, 0);
             return 0;
-        case 0x233u:
-            DragFileProc(hWnd, (HDROP)wParam);
-            SetForegroundWindow(hWnd);
+        case 40011: // Reset
+            SetReset(1);
             return 0;
-        case 0x282u:
-            if (wParam == 8)
-            {
-                v7 = ImmGetContext(hWnd);
-                ImmSetOpenStatus(v7, 0);
-                ImmReleaseContext(hWnd, v7);
-            }
+        case 40016: // Minimize
+            ShowWindow(hWnd, 6);
+            return 0;
+        case 40018: // Volume
+            OpenSoundVolume(hWnd);
             return 0;
         default:
-            return DefWindowProcA(hWnd, Msg, wParam, lParam);
+            break;
         }
-    }
-    if (Msg == 274)
-    {
-        if (wParam != 61696 && wParam != 61760 && wParam != 61808)
-            DefWindowProcA(hWnd, Msg, wParam, lParam);
-    }
-    else if (Msg > 0x10)
-    {
-        if (Msg < 0x100)
-            return DefWindowProcA(hWnd, Msg, wParam, lParam);
-        if (Msg > 0x101)
-        {
-            if (Msg == 273)
-            {
-                switch (wParam)
-                {
-                case 0x9C42u:
-                    SendMessageA(hWnd, 0x10u, 0, 0);
-                    return 0;
-                case 0x9C46u:
-                case 0x9C47u:
-                case 0x9C48u:
-                case 0x9C4Eu:
-                case 0x9C4Fu:
-                case 0x9C54u:
-                    SetScreenMode(wParam, 0);
-                    return 0;
-                case 0x9C4Bu:
-                    SetReset(TRUE);
-                    return 0;
-                case 0x9C50u:
-                    ShowWindow(hWnd, 6);
-                    return 0;
-                case 0x9C52u:
-                    OpenSoundVolume(hWnd);
-                    return 0;
-                default:
-                    return DefWindowProcA(hWnd, Msg, wParam, lParam);
-                }
-            }
-            return DefWindowProcA(hWnd, Msg, wParam, lParam);
-        }
+        break;
+
+    case WM_KEYDOWN:
+    case WM_KEYUP:
         OutputDebugStringA("kk\n");
         Input_ProcessWinMsg(hWnd, Msg, wParam);
-    }
-    else
-    {
-        switch (Msg)
+        break;
+
+    case WM_CLOSE:
+        PostQuitMessage(0);
+        break;
+
+    case WM_CREATE:
+        GameFocussed = 1;
+        break;
+
+    case WM_SIZE:
+        if (wParam)
         {
-        case 0x10u:
-            PostQuitMessage(0);
-            break;
-        case 1u:
-            GameFocussed = 1;
-            break;
-        case 5u:
-            if (wParam)
-            {
-                if (wParam == 1)
-                    MinimizeGame();
-            }
-            else
-            {
-                RestoreGame();
-            }
-            break;
-        default:
-            return DefWindowProcA(hWnd, Msg, wParam, lParam);
+            if (wParam == 1)
+                MinimizeGame();
         }
+        else
+        {
+            RestoreGame();
+        }
+        break;
+
+    default:
+        break;
     }
-    return 0;
+
+    return DefWindowProcA(hWnd, Msg, wParam, lParam);
 }
 
 //----- (0041E220) --------------------------------------------------------
@@ -543,8 +537,8 @@ static BOOL OpenSoundVolume(HWND hwnd)
 //----- (0041E370) --------------------------------------------------------
 static void InitMenuItem(HWND hWnd)
 {
-    struct tagMENUITEMINFOA mii; // [esp+4h] [ebp-38h] BYREF
-    int item;                    // [esp+34h] [ebp-8h]
+    MENUITEMINFOA mii; // [esp+4h] [ebp-38h] BYREF
+    int item;          // [esp+34h] [ebp-8h]
 
     HMENU hSysMenu = GetSystemMenu(hWnd, 0);
     for (item = GetMenuItemCount(hSysMenu) - 1; item >= 0; --item)
@@ -560,7 +554,7 @@ static void InitMenuItem(HWND hWnd)
 //----- (0041E410) --------------------------------------------------------
 void SaveWindowSettings(HWND hWnd)
 {
-    SaveWindowRect(hWnd, windowName[1]);
+    SaveWindowRect(hWnd, mainRectName);
     WriteScreenMode();
 }
 
@@ -571,7 +565,7 @@ static void WriteScreenMode()
     FILE *fd;       // [esp+10Ch] [ebp-4h]
 
     fd = 0;
-    sprintf(path, "%s\\%s", temp_guxtPath, windowName[2]);
+    sprintf(path, "%s\\%s", temp_guxtPath, mainScreenModeName);
     fd = fopen(path, "wb");
 
     if (!fd)
@@ -725,7 +719,7 @@ static BOOL SaveWindowRect(HWND hWnd, const char *file_name)
     {
         if (!GetWindowRect(hWnd, &rcPos))
             return FALSE;
-            
+
         wndpl.rcNormalPosition = rcPos;
     }
 
